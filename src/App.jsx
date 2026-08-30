@@ -3,9 +3,9 @@ import { useState } from "react";
 const STOPS = [
   { day: 1, label: "Lundi", place: null },
   { day: 2, label: "Mardi", place: null },
-  { day: 3, label: "Mercredi", place: null },
+  { day: 3, label: "Mercredi", place: "Bar de l'Europe, Rue Malon, Caen" },
   { day: 4, label: "Jeudi", place: "Super U Colombelles" },
-  { day: 5, label: "Vendredi", place: "Rue Pasteur, Mondeville" },
+  { day: 5, label: "Vendredi", place: "20 bis Rue Pasteur, Mondeville" },
   { day: 6, label: "Samedi", place: "Bd des Violettes, Ifs" },
   { day: 0, label: "Dimanche", place: "Super U Colombelles" },
 ];
@@ -23,35 +23,37 @@ const BURGERS = [
     name: "Le Classique",
     price: "10 €",
     note: "+1,50 € bacon",
-    desc: "Steak 115g, cheddar, sauce maison, crudités fraîches.",
+    desc: "Steak, cheddar, oignons, salade, tomate, cornichons, sauce burger.",
   },
   {
     name: "Le Bacon Fusion",
     price: "13 €",
-    desc: "Double bacon fumé, cheddar affiné, oignons caramélisés.",
+    desc: "Steak, cheddar, provolone, double bacon de bœuf et de dinde, oignons, salade, tomate, sauce douce oignons.",
   },
   {
     name: "Le Spicy Kefta Avocado",
     price: "12,90 €",
-    desc: "Kefta épicée maison, avocat, sauce piquante douce.",
+    desc: "Steak façon kefta, cheddar spicy, guacamole maison, oignons, salade, tomate, sauce toscane.",
   },
   {
     name: "Le BG d'Ambert",
     price: "12,90 €",
-    desc: "Bacon, bleu d'Ambert, sauce burger signature.",
+    desc: "Steak, bacon, fourme d'Ambert, champignons, oignons, salade, tomate, sauce burger.",
   },
   {
     name: "L'Italiano di Brooklyn",
     price: "13 €",
-    desc: "Mozzarella fondue, sauce tomate basilic, roquette.",
+    desc: "Steak, cheddar, provolone, pepperoni, oignons, salade, tomate, sauce toscane.",
   },
   {
     name: "Le Chèvre et Poivron",
     price: "12 €",
     note: "9 € sans steak (végé)",
-    desc: "Chèvre chaud, poivrons confits, miel, roquette.",
+    desc: "Steak, cheddar, chèvre, poivrons et oignons grillés, tomate, salade, cream cheese.",
   },
 ];
+
+const FRIES_SUPPLEMENT = "Frites maison + 3,50 €";
 
 const DESSERTS = [
   { name: "Tiramisu", price: "4 €" },
@@ -72,6 +74,7 @@ const TABS = [
 ];
 
 const INSTAGRAM_URL = "https://www.instagram.com/chezadilstreetfood/";
+const YOUTUBE_URL = "https://www.youtube.com/@ChezAdil-streetfood";
 
 const VIDEOS = [
   { title: "Short #1", url: "https://www.youtube.com/shorts/vzR4jGJwVRI", id: "vzR4jGJwVRI" },
@@ -489,6 +492,7 @@ export default function ChezAdilApp() {
           <div>
             <div className="ca-eyebrow">La carte</div>
             <h3 className="ca-h3">Nos burgers</h3>
+            <div className="ca-item-note" style={{ marginBottom: 12 }}>{FRIES_SUPPLEMENT}</div>
             {BURGERS.map((b) => (
               <div className="ca-item" key={b.name}>
                 <div className="ca-item-top">
@@ -644,6 +648,15 @@ export default function ChezAdilApp() {
               rel="noopener noreferrer"
             >
               @chezadilstreetfood sur Instagram
+            </a>
+            <a
+              className="ca-cta-insta"
+              href={YOUTUBE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ marginTop: 8 }}
+            >
+              Chez Adil sur YouTube
             </a>
           </div>
         )}
