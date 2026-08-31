@@ -10,51 +10,6 @@ const STOPS = [
   { day: 0, label: "Dimanche", place: "Super U Colombelles" },
 ];
 
-// Exceptions ponctuelles : remplace l'emplacement habituel un jour précis.
-// Format de date : "AAAA-MM-JJ". Pour ajouter une exception, ajoute une ligne ici.
-const EXCEPTIONS = [
-  {
-    date: "2026-09-05",
-    place: "Église Saint-Nicolas, Caen — Festival des Cultures Alternatives",
-    popupTitle: "Exception ce samedi !",
-    popupText:
-      "Direction le Festival des Cultures Alternatives — Église Saint-Nicolas, Caen. On vous y attend avec les mêmes burgers, juste un nouveau décor !",
-  },
-];
-
-function getTodayException() {
-  const now = new Date();
-  const iso = now.toISOString().slice(0, 10);
-  return EXCEPTIONS.find((e) => e.date === iso) || null;
-}
-
-// Retourne la prochaine exception à venir (aujourd'hui ou dans les jours suivants),
-// pour prévenir les clients qui commandent en avance.
-function getUpcomingException(daysAhead = 21) {
-  const now = new Date();
-  const todayIso = now.toISOString().slice(0, 10);
-  const futureLimit = new Date(now);
-  futureLimit.setDate(futureLimit.getDate() + daysAhead);
-  const limitIso = futureLimit.toISOString().slice(0, 10);
-
-  return (
-    EXCEPTIONS.filter((e) => e.date >= todayIso && e.date <= limitIso).sort((a, b) =>
-      a.date.localeCompare(b.date)
-    )[0] || null
-  );
-}
-
-function formatExceptionDate(dateStr) {
-  const [y, m, d] = dateStr.split("-").map(Number);
-  const date = new Date(y, m - 1, d);
-  const label = date.toLocaleDateString("fr-FR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
-  return label.charAt(0).toUpperCase() + label.slice(1);
-}
-
 function mapsUrl(place) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place)}`;
 }
@@ -126,13 +81,8 @@ const VIDEOS = [
   { title: "Short #3", url: "https://www.youtube.com/shorts/w17B8XLRtJg", id: "w17B8XLRtJg" },
 ];
 
-const BIO_PARAGRAPHS = [
-  "Tout a commencé dans une petite cuisine, chez Burger Avenue, à la Demi-Lune. Un projet modeste, quelques burgers faits avec sérieux, et beaucoup d'envie.",
-  "Puis le Covid est passé par là. Une pause s'est imposée — pas vraiment un choix, plutôt une parenthèse forcée.",
-  "Mais l'envie de revenir dans le monde du burger n'a jamais disparu. Avec une idée en tête : y revenir autrement. Sortir d'une cuisine fixe, aller à votre rencontre, se réinventer avec de nouveaux défis — comme les privatisations. Besoin de respirer, de bouger, de ne plus être enfermé entre quatre murs.",
-  "Ce que j'avais un peu oublié, c'est que ce ne serait pas si simple. Reconstruire une clientèle, retrouver ses marques, apprendre un nouveau métier — celui du camion, de la route, des emplacements qui changent.",
-  "Mais c'est aussi ça, Chez Adil : un projet vivant, humain, qui avance semaine après semaine — et qui n'existerait pas sans vous.",
-];
+// TODO Adil : remplace ce texte par ton histoire (depuis Burger Avenue jusqu'à Chez Adil).
+const BIO_TEXT = `À compléter : raconte ici ton histoire, depuis tes débuts chez Burger Avenue jusqu'à la création de Chez Adil.`;
 
 const GOOGLE_MAPS_URL = "https://maps.app.goo.gl/fnm2r5Mq3Ly66z7i7";
 
@@ -157,16 +107,6 @@ const REVIEWS = [
 export default function ChezAdilApp() {
   const [tab, setTab] = useState("planning");
   const todayIdx = new Date().getDay();
-  const todayException = getTodayException();
-  const upcomingException = getUpcomingException();
-
-  // La popup s'affiche à chaque visite tant qu'une exception est à venir (ou aujourd'hui).
-  // Elle disparaît d'elle-même une fois la date passée, sans avoir besoin d'être "retenue" par appareil.
-  const [showExceptionPopup, setShowExceptionPopup] = useState(!!upcomingException);
-
-  function dismissExceptionPopup() {
-    setShowExceptionPopup(false);
-  }
 
   const [form, setForm] = useState({
     nom: "",
@@ -222,7 +162,6 @@ export default function ChezAdilApp() {
           --ca-ink: #1A1A1A;
           --ca-steel: #5C7080;
           font-family: 'Work Sans', sans-serif;
-          font-size: 15px;
           background: var(--ca-cream);
           color: var(--ca-ink);
           min-height: 100vh;
@@ -231,7 +170,6 @@ export default function ChezAdilApp() {
           max-width: 480px;
           margin: 0 auto;
           box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-          position: relative;
         }
         .ca-app * { box-sizing: border-box; }
         .ca-app button:focus-visible, .ca-app [role="tab"]:focus-visible {
@@ -243,20 +181,10 @@ export default function ChezAdilApp() {
         }
 
         .ca-header {
-          background: linear-gradient(160deg, var(--ca-navy-2) 0%, var(--ca-navy) 45%, var(--ca-navy) 100%);
+          background: var(--ca-navy);
           color: var(--ca-cream);
           padding: 28px 20px 20px;
           position: relative;
-          overflow: hidden;
-        }
-        .ca-header::before {
-          content: "";
-          position: absolute;
-          top: -60%; left: -20%;
-          width: 140%; height: 100%;
-          background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 70%);
-          pointer-events: none;
-          transform: rotate(-4deg);
         }
         .ca-rivet {
           position: absolute;
@@ -269,7 +197,7 @@ export default function ChezAdilApp() {
           font-family: 'Oswald', sans-serif;
           font-weight: 700;
           letter-spacing: 0.06em;
-          font-size: 31px;
+          font-size: 28px;
           text-transform: uppercase;
           margin: 0;
         }
@@ -306,7 +234,7 @@ export default function ChezAdilApp() {
           margin-bottom: 8px;
         }
         .ca-reviews-text {
-          font-size: 14px;
+          font-size: 13px;
           line-height: 1.5;
           margin: 0 0 8px;
           font-style: italic;
@@ -314,7 +242,7 @@ export default function ChezAdilApp() {
         }
         .ca-reviews-author {
           font-family: 'Oswald', sans-serif;
-          font-size: 13px;
+          font-size: 12px;
           text-transform: uppercase;
           letter-spacing: 0.04em;
           color: var(--ca-brass-light);
@@ -340,72 +268,6 @@ export default function ChezAdilApp() {
           border-bottom: 1px solid var(--ca-brass);
           padding-bottom: 1px;
         }
-
-        .ca-popup-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(10, 20, 26, 0.72);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 24px;
-          z-index: 1000;
-        }
-        .ca-popup {
-          position: relative;
-          background: var(--ca-navy);
-          color: var(--ca-cream);
-          border: 1px solid var(--ca-brass);
-          border-radius: 12px;
-          padding: 28px 22px 22px;
-          max-width: 360px;
-          width: 100%;
-          text-align: center;
-        }
-        .ca-popup-close {
-          position: absolute;
-          top: 8px; right: 10px;
-          background: none;
-          border: none;
-          color: var(--ca-cream);
-          font-size: 22px;
-          line-height: 1;
-          cursor: pointer;
-          padding: 6px;
-        }
-        .ca-popup-title {
-          font-family: 'Oswald', sans-serif;
-          text-transform: uppercase;
-          letter-spacing: 0.03em;
-          font-size: 18.5px;
-          color: var(--ca-brass-light);
-          margin-bottom: 10px;
-        }
-        .ca-popup-date {
-          font-family: 'Oswald', sans-serif;
-          font-size: 13px;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-          background: rgba(201,162,75,0.16);
-          border: 1px solid var(--ca-brass);
-          color: var(--ca-brass-light);
-          display: inline-block;
-          padding: 3px 10px;
-          border-radius: 20px;
-          margin-bottom: 12px;
-        }
-        .ca-popup-text {
-          font-size: 15px;
-          line-height: 1.5;
-          margin-bottom: 10px;
-        }
-        .ca-popup-reassure {
-          font-size: 13px;
-          line-height: 1.4;
-          color: rgba(243,239,230,0.75);
-          font-style: italic;
-          margin-bottom: 18px;
-        }
         .ca-menu-halo {
           position: relative;
           width: 100%;
@@ -430,7 +292,7 @@ export default function ChezAdilApp() {
           border-bottom: 1px solid var(--ca-brass);
         }
         .ca-tagline {
-          font-size: 14px;
+          font-size: 13px;
           color: var(--ca-brass-light);
           margin-top: 8px;
           letter-spacing: 0.03em;
@@ -439,62 +301,48 @@ export default function ChezAdilApp() {
           margin-top: 16px;
           background: var(--ca-navy-2);
           border-left: 3px solid var(--ca-brass);
-          padding: 11px 12px;
+          padding: 10px 12px;
           border-radius: 4px;
-          font-size: 14px;
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+          font-size: 13px;
         }
         .ca-today-strip b { color: var(--ca-brass-light); }
 
         .ca-tabs {
           display: flex;
-          gap: 3px;
-          background: var(--ca-navy);
-          padding: 8px 6px 0;
+          background: var(--ca-navy-2);
         }
         .ca-tab {
           flex: 1;
-          min-width: 0;
-          padding: 12px 4px 11px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          padding: 12px 4px;
           text-align: center;
-          background: var(--ca-navy-2);
+          background: none;
           border: none;
-          color: rgba(243,239,230,0.65);
+          color: rgba(243,239,230,0.55);
           font-family: 'Oswald', sans-serif;
-          font-size: 12.5px;
-          line-height: 1.15;
-          letter-spacing: 0.03em;
+          font-size: 12px;
+          letter-spacing: 0.04em;
           text-transform: uppercase;
           cursor: pointer;
-          border-radius: 10px 10px 0 0;
-          position: relative;
-          top: 4px;
-          transition: top 0.15s ease, background 0.15s ease, color 0.15s ease;
+          border-bottom: 3px solid transparent;
         }
         .ca-tab.active {
-          background: linear-gradient(160deg, var(--ca-brass-light) 0%, var(--ca-brass) 100%);
-          color: var(--ca-navy);
-          font-weight: 700;
-          top: 0;
-          box-shadow: 0 -2px 6px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.5);
+          color: var(--ca-cream);
+          border-bottom: 3px solid var(--ca-brass);
         }
 
         .ca-body { padding: 18px 16px 28px; }
 
         .ca-eyebrow {
-          font-size: 12.5px;
+          font-size: 11px;
           text-transform: uppercase;
           letter-spacing: 0.08em;
           color: var(--ca-steel);
-          margin-bottom: 5px;
+          margin-bottom: 4px;
         }
         .ca-h3 {
           font-family: 'Oswald', sans-serif;
-          font-size: 21px;
-          margin: 0 0 14px;
+          font-size: 18px;
+          margin: 0 0 12px;
           color: var(--ca-navy);
         }
 
@@ -515,17 +363,17 @@ export default function ChezAdilApp() {
         }
         .ca-stop.today .ca-stop-place { color: var(--ca-brass-light); }
         .ca-stop.off { opacity: 0.45; }
-        .ca-stop-day { font-family: 'Oswald', sans-serif; font-size: 14.5px; letter-spacing: 0.03em; }
+        .ca-stop-day { font-family: 'Oswald', sans-serif; font-size: 13px; letter-spacing: 0.03em; }
         .ca-stop-place-link {
           display: flex;
           align-items: baseline;
           gap: 8px;
           text-decoration: none;
         }
-        .ca-stop-place { font-size: 14.5px; font-weight: 600; color: inherit; }
-        .ca-stop-gps { font-size: 12px; color: var(--ca-brass); }
+        .ca-stop-place { font-size: 13px; font-weight: 600; color: inherit; }
+        .ca-stop-gps { font-size: 11px; color: var(--ca-brass); }
         .ca-stop.today .ca-stop-gps { color: var(--ca-brass-light); }
-        .ca-stop-time { font-size: 12px; color: var(--ca-steel); }
+        .ca-stop-time { font-size: 11px; color: var(--ca-steel); }
         .ca-stop.today .ca-stop-time { color: rgba(243,239,230,0.7); }
         .ca-badge-today {
           font-size: 10px;
@@ -547,91 +395,63 @@ export default function ChezAdilApp() {
           display: flex;
           justify-content: space-between;
           font-family: 'Oswald', sans-serif;
-          font-size: 16.5px;
+          font-size: 15px;
           color: var(--ca-navy);
         }
         .ca-item-price { color: var(--ca-brass); font-weight: 700; white-space: nowrap; margin-left: 8px; }
-        .ca-item-note { font-size: 12px; color: var(--ca-steel); margin-top: 2px; }
-        .ca-item-desc { font-size: 14px; color: var(--ca-ink); margin-top: 4px; line-height: 1.45; }
-        .ca-item-side { margin-top: 4px; background: rgba(201,162,75,0.08); border-radius: 8px; padding: 12px 10px; border-bottom: none; }
+        .ca-item-note { font-size: 11px; color: var(--ca-steel); margin-top: 2px; }
+        .ca-item-desc { font-size: 13px; color: var(--ca-ink); margin-top: 4px; line-height: 1.4; }
 
         .ca-section-title {
           font-family: 'Oswald', sans-serif;
-          font-size: 14px;
+          font-size: 13px;
           text-transform: uppercase;
           letter-spacing: 0.06em;
           color: var(--ca-steel);
-          margin: 22px 0 8px;
+          margin: 20px 0 6px;
         }
-
-        .ca-framed {
-          background: white;
-          border: 1px solid #E4DFD1;
-          border-radius: 10px;
-          padding: 4px 14px;
-          box-shadow: 0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6);
-        }
-        .ca-framed-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 12px 0;
-          font-family: 'Oswald', sans-serif;
-          font-size: 15.5px;
-          color: var(--ca-navy);
-          border-bottom: 1px solid #EFEBDF;
-        }
-        .ca-framed-row:last-child { border-bottom: none; }
-
-        .ca-bio-p { font-size: 14.5px; color: var(--ca-ink); margin: 0 0 12px; line-height: 1.6; }
 
         .ca-card {
-          background: linear-gradient(160deg, #ffffff 0%, #fdfcf9 100%);
+          background: white;
           border: 1px solid #E4DFD1;
           border-radius: 10px;
           padding: 16px;
           position: relative;
-          box-shadow: 0 2px 6px rgba(22,48,63,0.06), inset 0 1px 0 rgba(255,255,255,0.7);
         }
         .ca-btn {
           width: 100%;
-          background: linear-gradient(160deg, var(--ca-navy-2) 0%, var(--ca-navy) 100%);
+          background: var(--ca-navy);
           color: var(--ca-cream);
           border: none;
-          padding: 13px;
+          padding: 12px;
           border-radius: 8px;
           font-family: 'Oswald', sans-serif;
           letter-spacing: 0.03em;
-          font-size: 14px;
+          font-size: 13px;
           text-transform: uppercase;
           cursor: pointer;
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 5px rgba(22,48,63,0.25);
         }
         .ca-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .ca-btn-brass {
-          background: linear-gradient(160deg, var(--ca-brass-light) 0%, var(--ca-brass) 100%);
-          color: var(--ca-navy);
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 2px 5px rgba(201,162,75,0.35);
-        }
-        .ca-fineprint { font-size: 12px; color: var(--ca-steel); margin-top: 10px; text-align: center; }
+        .ca-btn-brass { background: var(--ca-brass); color: var(--ca-navy); }
+        .ca-fineprint { font-size: 11px; color: var(--ca-steel); margin-top: 10px; text-align: center; }
 
         .ca-form { margin-bottom: 20px; }
         .ca-field { margin-bottom: 12px; }
         .ca-label {
           display: block;
-          font-size: 13px;
+          font-size: 12px;
           color: var(--ca-steel);
           margin-bottom: 4px;
         }
         .ca-input {
           width: 100%;
-          padding: 11px 12px;
+          padding: 10px 12px;
           border: 1px solid #D8CBA8;
           border-radius: 8px;
           background: white;
           color: var(--ca-ink);
           font-family: 'Work Sans', sans-serif;
-          font-size: 15px;
+          font-size: 14px;
         }
         .ca-input:focus {
           outline: 2px solid var(--ca-brass);
@@ -659,23 +479,22 @@ export default function ChezAdilApp() {
           color: var(--ca-brass-light);
           font-size: 18px;
         }
-        .ca-video-title { font-size: 14.5px; font-weight: 600; color: var(--ca-navy); }
-        .ca-video-sub { font-size: 12px; color: var(--ca-steel); }
+        .ca-video-title { font-size: 13px; font-weight: 600; color: var(--ca-navy); }
+        .ca-video-sub { font-size: 11px; color: var(--ca-steel); }
         .ca-cta-yt, .ca-cta-insta {
           display: block;
           text-align: center;
           margin-top: 14px;
-          background: linear-gradient(160deg, var(--ca-brass-light) 0%, var(--ca-brass) 100%);
+          background: var(--ca-brass);
           color: var(--ca-navy);
-          padding: 11px;
+          padding: 10px;
           border-radius: 8px;
           text-decoration: none;
           font-family: 'Oswald', sans-serif;
-          font-size: 14px;
+          font-size: 13px;
           text-transform: uppercase;
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 2px 5px rgba(201,162,75,0.3);
         }
-        .ca-cta-insta { background: linear-gradient(160deg, var(--ca-navy-2) 0%, var(--ca-navy) 100%); color: var(--ca-cream); box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 5px rgba(22,48,63,0.25); }
+        .ca-cta-insta { background: var(--ca-navy); color: var(--ca-cream); }
         .ca-video-thumb-img {
           width: 56px; height: 56px;
           border-radius: 6px;
@@ -692,25 +511,24 @@ export default function ChezAdilApp() {
         .ca-presta-item:last-child { border-bottom: none; }
         .ca-presta-title {
           font-family: 'Oswald', sans-serif;
-          font-size: 16.5px;
+          font-size: 15px;
           color: var(--ca-navy);
           margin-bottom: 4px;
         }
-        .ca-presta-desc { font-size: 14px; color: var(--ca-ink); line-height: 1.5; }
+        .ca-presta-desc { font-size: 13px; color: var(--ca-ink); line-height: 1.45; }
         .ca-cta-contact {
           display: block;
           text-align: center;
           margin-top: 16px;
-          background: linear-gradient(160deg, var(--ca-navy-2) 0%, var(--ca-navy) 100%);
+          background: var(--ca-navy);
           color: var(--ca-cream);
-          padding: 13px;
+          padding: 12px;
           border-radius: 8px;
           text-decoration: none;
           font-family: 'Oswald', sans-serif;
-          font-size: 14px;
+          font-size: 13px;
           letter-spacing: 0.03em;
           text-transform: uppercase;
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 5px rgba(22,48,63,0.25);
         }
       `}</style>
 
@@ -740,11 +558,7 @@ export default function ChezAdilApp() {
         </a>
         <p className="ca-tagline">Burger premium &amp; artisanal · depuis 2016 · Caen &amp; alentours</p>
         <div className="ca-today-strip">
-          {todayException ? (
-            <>
-              Exceptionnellement aujourd'hui : <b>{todayException.place}</b>
-            </>
-          ) : STOPS[todayIdx].place ? (
+          {STOPS[todayIdx].place ? (
             <>
               Aujourd'hui : <b>{STOPS[todayIdx].place}</b> — à partir de 19h
             </>
@@ -753,27 +567,6 @@ export default function ChezAdilApp() {
           )}
         </div>
       </div>
-
-      {showExceptionPopup && upcomingException && (
-        <div className="ca-popup-overlay" onClick={dismissExceptionPopup}>
-          <div className="ca-popup" onClick={(e) => e.stopPropagation()}>
-            <button className="ca-popup-close" onClick={dismissExceptionPopup} aria-label="Fermer">
-              ×
-            </button>
-            <div className="ca-popup-title">{upcomingException.popupTitle}</div>
-            {upcomingException.date !== new Date().toISOString().slice(0, 10) && (
-              <div className="ca-popup-date">{formatExceptionDate(upcomingException.date)}</div>
-            )}
-            <p className="ca-popup-text">{upcomingException.popupText}</p>
-            <p className="ca-popup-reassure">
-              Le service continue normalement les autres jours, c'est seulement ce jour-là que ça change !
-            </p>
-            <button className="ca-btn ca-btn-brass" onClick={dismissExceptionPopup}>
-              Compris !
-            </button>
-          </div>
-        </div>
-      )}
 
       <div className="ca-tabs" role="tablist">
         {TABS.map((t) => (
@@ -818,39 +611,31 @@ export default function ChezAdilApp() {
 
             <div className="ca-eyebrow">Semaine type</div>
             <h3 className="ca-h3">Nos emplacements</h3>
-            {STOPS.map((s) => {
-              const isToday = s.day === todayIdx;
-              const place = isToday && todayException ? todayException.place : s.place;
-              return (
-                <div
-                  key={s.day}
-                  className={`ca-stop ${isToday ? "today" : ""} ${!place ? "off" : ""}`}
-                >
-                  <div>
-                    <div className="ca-stop-day">
-                      {s.label}
-                      {isToday && (
-                        <span className="ca-badge-today">
-                          {todayException ? "Aujourd'hui — exceptionnel" : "Aujourd'hui"}
-                        </span>
-                      )}
-                    </div>
-                    {place && (
-                      <a
-                        className="ca-stop-place-link"
-                        href={mapsUrl(place)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <span className="ca-stop-place">{place}</span>
-                        <span className="ca-stop-gps">📍 Itinéraire</span>
-                      </a>
-                    )}
+            {STOPS.map((s) => (
+              <div
+                key={s.day}
+                className={`ca-stop ${s.day === todayIdx ? "today" : ""} ${!s.place ? "off" : ""}`}
+              >
+                <div>
+                  <div className="ca-stop-day">
+                    {s.label}
+                    {s.day === todayIdx && <span className="ca-badge-today">Aujourd'hui</span>}
                   </div>
-                  {place && <div className="ca-stop-time">dès 19h</div>}
+                  {s.place && (
+                    <a
+                      className="ca-stop-place-link"
+                      href={mapsUrl(s.place)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span className="ca-stop-place">{s.place}</span>
+                      <span className="ca-stop-gps">📍 Itinéraire</span>
+                    </a>
+                  )}
                 </div>
-              );
-            })}
+                {s.place && <div className="ca-stop-time">dès 19h</div>}
+              </div>
+            ))}
           </div>
         )}
 
@@ -859,6 +644,10 @@ export default function ChezAdilApp() {
             <div className="ca-menu-halo" aria-hidden="true" />
             <div className="ca-eyebrow">La carte</div>
             <h3 className="ca-h3">Nos burgers</h3>
+            <div className="ca-item-top" style={{ marginBottom: 12 }}>
+              <span>Frites maison</span>
+              <span className="ca-item-price" style={{ fontSize: 18 }}>+ 3,50 €</span>
+            </div>
             {BURGERS.map((b) => (
               <div className="ca-item" key={b.name}>
                 <div className="ca-item-top">
@@ -869,33 +658,26 @@ export default function ChezAdilApp() {
                 <div className="ca-item-desc">{b.desc}</div>
               </div>
             ))}
-            <div className="ca-item ca-item-side">
-              <div className="ca-item-top">
-                <span>Frites maison</span>
-                <span className="ca-item-price">+ 3,50 €</span>
-              </div>
-              <div className="ca-item-desc">En accompagnement de votre burger.</div>
-            </div>
 
             <div className="ca-section-title">Desserts</div>
-            <div className="ca-framed">
-              {DESSERTS.map((d) => (
-                <div className="ca-framed-row" key={d.name}>
+            {DESSERTS.map((d) => (
+              <div className="ca-item" key={d.name}>
+                <div className="ca-item-top">
                   <span>{d.name}</span>
                   <span className="ca-item-price">{d.price}</span>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
 
             <div className="ca-section-title">Boissons</div>
-            <div className="ca-framed">
-              {DRINKS.map((d) => (
-                <div className="ca-framed-row" key={d.name}>
+            {DRINKS.map((d) => (
+              <div className="ca-item" key={d.name}>
+                <div className="ca-item-top">
                   <span>{d.name}</span>
                   <span className="ca-item-price">{d.price}</span>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -1048,9 +830,7 @@ export default function ChezAdilApp() {
           <div>
             <div className="ca-eyebrow">Notre histoire</div>
             <h3 className="ca-h3">De Burger Avenue à Chez Adil</h3>
-            {BIO_PARAGRAPHS.map((p, i) => (
-              <p className="ca-bio-p" key={i}>{p}</p>
-            ))}
+            <p className="ca-item-desc">{BIO_TEXT}</p>
           </div>
         )}
       </div>
