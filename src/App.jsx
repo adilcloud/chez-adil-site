@@ -155,19 +155,11 @@ export default function ChezAdilApp() {
   const todayException = getTodayException();
   const upcomingException = getUpcomingException();
 
-  const [showExceptionPopup, setShowExceptionPopup] = useState(false);
-  useEffect(() => {
-    if (!upcomingException) return;
-    const dismissedKey = `ca-exception-dismissed-${upcomingException.date}`;
-    if (!localStorage.getItem(dismissedKey)) {
-      setShowExceptionPopup(true);
-    }
-  }, []);
+  // La popup s'affiche à chaque visite tant qu'une exception est à venir (ou aujourd'hui).
+  // Elle disparaît d'elle-même une fois la date passée, sans avoir besoin d'être "retenue" par appareil.
+  const [showExceptionPopup, setShowExceptionPopup] = useState(!!upcomingException);
 
   function dismissExceptionPopup() {
-    if (upcomingException) {
-      localStorage.setItem(`ca-exception-dismissed-${upcomingException.date}`, "1");
-    }
     setShowExceptionPopup(false);
   }
 
