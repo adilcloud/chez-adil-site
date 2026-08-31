@@ -10,6 +10,24 @@ const STOPS = [
   { day: 0, label: "Dimanche", place: "Super U Colombelles" },
 ];
 
+// Exceptions ponctuelles : remplace l'emplacement habituel un jour précis.
+// Format de date : "AAAA-MM-JJ". Pour ajouter une exception, ajoute une ligne ici.
+const EXCEPTIONS = [
+  {
+    date: "2026-09-05",
+    place: "Église Saint-Nicolas, Caen — Festival des Cultures Alternatives",
+    popupTitle: "Exception ce samedi !",
+    popupText:
+      "Direction le Festival des Cultures Alternatives — Église Saint-Nicolas, Caen. On vous y attend avec les mêmes burgers, juste un nouveau décor !",
+  },
+];
+
+function getTodayException() {
+  const now = new Date();
+  const iso = now.toISOString().slice(0, 10);
+  return EXCEPTIONS.find((e) => e.date === iso) || null;
+}
+
 function mapsUrl(place) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place)}`;
 }
@@ -107,6 +125,23 @@ const REVIEWS = [
 export default function ChezAdilApp() {
   const [tab, setTab] = useState("planning");
   const todayIdx = new Date().getDay();
+  const todayException = getTodayException();
+
+  const [showExceptionPopup, setShowExceptionPopup] = useState(false);
+  useEffect(() => {
+    if (!todayException) return;
+    const dismissedKey = `ca-exception-dismissed-${todayException.date}`;
+    if (!localStorage.getItem(dismissedKey)) {
+      setShowExceptionPopup(true);
+    }
+  }, []);
+
+  function dismissExceptionPopup() {
+    if (todayException) {
+      localStorage.setItem(`ca-exception-dismissed-${todayException.date}`, "1");
+    }
+    setShowExceptionPopup(false);
+  }
 
   const [form, setForm] = useState({
     nom: "",
@@ -267,6 +302,52 @@ export default function ChezAdilApp() {
           text-decoration: none;
           border-bottom: 1px solid var(--ca-brass);
           padding-bottom: 1px;
+        }
+
+        .ca-popup-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(10, 20, 26, 0.72);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+          z-index: 1000;
+        }
+        .ca-popup {
+          position: relative;
+          background: var(--ca-navy);
+          color: var(--ca-cream);
+          border: 1px solid var(--ca-brass);
+          border-radius: 12px;
+          padding: 28px 22px 22px;
+          max-width: 360px;
+          width: 100%;
+          text-align: center;
+        }
+        .ca-popup-close {
+          position: absolute;
+          top: 8px; right: 10px;
+          background: none;
+          border: none;
+          color: var(--ca-cream);
+          font-size: 22px;
+          line-height: 1;
+          cursor: pointer;
+          padding: 6px;
+        }
+        .ca-popup-title {
+          font-family: 'Oswald', sans-serif;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
+          font-size: 17px;
+          color: var(--ca-brass-light);
+          margin-bottom: 10px;
+        }
+        .ca-popup-text {
+          font-size: 14px;
+          line-height: 1.5;
+          margin-bottom: 18px;
         }
         .ca-menu-halo {
           position: relative;
@@ -558,7 +639,11 @@ export default function ChezAdilApp() {
         </a>
         <p className="ca-tagline">Burger premium &amp; artisanal · depuis 2016 · Caen &amp; alentours</p>
         <div className="ca-today-strip">
-          {STOPS[todayIdx].place ? (
+          {todayException ? (
+            <>
+              Exceptionnellement aujourd'hui : <b>{todayException.place}</b>
+            </>
+          ) : STOPS[todayIdx].place ? (
             <>
               Aujourd'hui : <b>{STOPS[todayIdx].place}</b> — à partir de 19h
             </>
@@ -567,6 +652,21 @@ export default function ChezAdilApp() {
           )}
         </div>
       </div>
+
+      {showExceptionPopup && todayException && (
+        <div className="ca-popup-overlay" onClick={dismissExceptionPopup}>
+          <div className="ca-popup" onClick={(e) => e.stopPropagation()}>
+            <button className="ca-popup-close" onClick={dismissExceptionPopup} aria-label="Fermer">
+              ×
+            </button>
+            <div className="ca-popup-title">{todayException.popupTitle}</div>
+            <p className="ca-popup-text">{todayException.popupText}</p>
+            <button className="ca-btn ca-btn-brass" onClick={dismissExceptionPopup}>
+              Compris !
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="ca-tabs" role="tablist">
         {TABS.map((t) => (
@@ -611,31 +711,39 @@ export default function ChezAdilApp() {
 
             <div className="ca-eyebrow">Semaine type</div>
             <h3 className="ca-h3">Nos emplacements</h3>
-            {STOPS.map((s) => (
-              <div
-                key={s.day}
-                className={`ca-stop ${s.day === todayIdx ? "today" : ""} ${!s.place ? "off" : ""}`}
-              >
-                <div>
-                  <div className="ca-stop-day">
-                    {s.label}
-                    {s.day === todayIdx && <span className="ca-badge-today">Aujourd'hui</span>}
+            {STOPS.map((s) => {
+              const isToday = s.day === todayIdx;
+              const place = isToday && todayException ? todayException.place : s.place;
+              return (
+                <div
+                  key={s.day}
+                  className={`ca-stop ${isToday ? "today" : ""} ${!place ? "off" : ""}`}
+                >
+                  <div>
+                    <div className="ca-stop-day">
+                      {s.label}
+                      {isToday && (
+                        <span className="ca-badge-today">
+                          {todayException ? "Aujourd'hui — exceptionnel" : "Aujourd'hui"}
+                        </span>
+                      )}
+                    </div>
+                    {place && (
+                      <a
+                        className="ca-stop-place-link"
+                        href={mapsUrl(place)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <span className="ca-stop-place">{place}</span>
+                        <span className="ca-stop-gps">📍 Itinéraire</span>
+                      </a>
+                    )}
                   </div>
-                  {s.place && (
-                    <a
-                      className="ca-stop-place-link"
-                      href={mapsUrl(s.place)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <span className="ca-stop-place">{s.place}</span>
-                      <span className="ca-stop-gps">📍 Itinéraire</span>
-                    </a>
-                  )}
+                  {place && <div className="ca-stop-time">dès 19h</div>}
                 </div>
-                {s.place && <div className="ca-stop-time">dès 19h</div>}
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
