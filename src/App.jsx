@@ -28,6 +28,33 @@ function getTodayException() {
   return EXCEPTIONS.find((e) => e.date === iso) || null;
 }
 
+// Retourne la prochaine exception à venir (aujourd'hui ou dans les jours suivants),
+// pour prévenir les clients qui commandent en avance.
+function getUpcomingException(daysAhead = 21) {
+  const now = new Date();
+  const todayIso = now.toISOString().slice(0, 10);
+  const futureLimit = new Date(now);
+  futureLimit.setDate(futureLimit.getDate() + daysAhead);
+  const limitIso = futureLimit.toISOString().slice(0, 10);
+
+  return (
+    EXCEPTIONS.filter((e) => e.date >= todayIso && e.date <= limitIso).sort((a, b) =>
+      a.date.localeCompare(b.date)
+    )[0] || null
+  );
+}
+
+function formatExceptionDate(dateStr) {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const date = new Date(y, m - 1, d);
+  const label = date.toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
 function mapsUrl(place) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place)}`;
 }
@@ -126,19 +153,20 @@ export default function ChezAdilApp() {
   const [tab, setTab] = useState("planning");
   const todayIdx = new Date().getDay();
   const todayException = getTodayException();
+  const upcomingException = getUpcomingException();
 
   const [showExceptionPopup, setShowExceptionPopup] = useState(false);
   useEffect(() => {
-    if (!todayException) return;
-    const dismissedKey = `ca-exception-dismissed-${todayException.date}`;
+    if (!upcomingException) return;
+    const dismissedKey = `ca-exception-dismissed-${upcomingException.date}`;
     if (!localStorage.getItem(dismissedKey)) {
       setShowExceptionPopup(true);
     }
   }, []);
 
   function dismissExceptionPopup() {
-    if (todayException) {
-      localStorage.setItem(`ca-exception-dismissed-${todayException.date}`, "1");
+    if (upcomingException) {
+      localStorage.setItem(`ca-exception-dismissed-${upcomingException.date}`, "1");
     }
     setShowExceptionPopup(false);
   }
@@ -344,9 +372,29 @@ export default function ChezAdilApp() {
           color: var(--ca-brass-light);
           margin-bottom: 10px;
         }
+        .ca-popup-date {
+          font-family: 'Oswald', sans-serif;
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          background: rgba(201,162,75,0.16);
+          border: 1px solid var(--ca-brass);
+          color: var(--ca-brass-light);
+          display: inline-block;
+          padding: 3px 10px;
+          border-radius: 20px;
+          margin-bottom: 12px;
+        }
         .ca-popup-text {
           font-size: 14px;
           line-height: 1.5;
+          margin-bottom: 10px;
+        }
+        .ca-popup-reassure {
+          font-size: 12px;
+          line-height: 1.4;
+          color: rgba(243,239,230,0.75);
+          font-style: italic;
           margin-bottom: 18px;
         }
         .ca-menu-halo {
@@ -653,14 +701,20 @@ export default function ChezAdilApp() {
         </div>
       </div>
 
-      {showExceptionPopup && todayException && (
+      {showExceptionPopup && upcomingException && (
         <div className="ca-popup-overlay" onClick={dismissExceptionPopup}>
           <div className="ca-popup" onClick={(e) => e.stopPropagation()}>
             <button className="ca-popup-close" onClick={dismissExceptionPopup} aria-label="Fermer">
               ×
             </button>
-            <div className="ca-popup-title">{todayException.popupTitle}</div>
-            <p className="ca-popup-text">{todayException.popupText}</p>
+            <div className="ca-popup-title">{upcomingException.popupTitle}</div>
+            {upcomingException.date !== new Date().toISOString().slice(0, 10) && (
+              <div className="ca-popup-date">{formatExceptionDate(upcomingException.date)}</div>
+            )}
+            <p className="ca-popup-text">{upcomingException.popupText}</p>
+            <p className="ca-popup-reassure">
+              Le service continue normalement les autres jours, c'est seulement ce jour-là que ça change !
+            </p>
             <button className="ca-btn ca-btn-brass" onClick={dismissExceptionPopup}>
               Compris !
             </button>
