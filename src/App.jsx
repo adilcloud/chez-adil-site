@@ -260,6 +260,32 @@ export default function ChezAdilApp() {
           .ca-app * { transition: none !important; animation: none !important; }
         }
 
+        @keyframes ca-fade-in-up {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes ca-fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes ca-pop-in {
+          from { opacity: 0; transform: scale(0.94) translateY(8px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .ca-fade-in-section {
+          animation: ca-fade-in-up 0.38s ease both;
+        }
+        .ca-fade-in-section > * {
+          animation: ca-fade-in-up 0.4s ease both;
+        }
+        .ca-fade-in-section > *:nth-child(1) { animation-delay: 0.02s; }
+        .ca-fade-in-section > *:nth-child(2) { animation-delay: 0.06s; }
+        .ca-fade-in-section > *:nth-child(3) { animation-delay: 0.1s; }
+        .ca-fade-in-section > *:nth-child(4) { animation-delay: 0.14s; }
+        .ca-fade-in-section > *:nth-child(5) { animation-delay: 0.18s; }
+        .ca-fade-in-section > *:nth-child(6) { animation-delay: 0.22s; }
+        .ca-fade-in-section > *:nth-child(n+7) { animation-delay: 0.26s; }
+
         .ca-header {
           background: var(--ca-navy);
           color: var(--ca-cream);
@@ -307,6 +333,7 @@ export default function ChezAdilApp() {
           text-align: center;
           position: relative;
         }
+        .ca-reviews-fade { animation: ca-fade-in 0.4s ease both; }
         .ca-reviews-stars {
           color: var(--ca-brass-light);
           font-size: 15px;
@@ -412,6 +439,7 @@ export default function ChezAdilApp() {
           top: 5px;
           transition: top 0.15s ease, background 0.15s ease, color 0.15s ease;
         }
+        .ca-tab:hover:not(.active) { color: rgba(243,239,230,0.85); }
         .ca-tab.active {
           background: var(--ca-cream);
           color: var(--ca-navy);
@@ -446,6 +474,11 @@ export default function ChezAdilApp() {
           margin-bottom: 8px;
           background: white;
           border: 1px solid #E4DFD1;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .ca-stop:hover, .ca-stop:active {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 14px rgba(22,48,63,0.08);
         }
         .ca-stop.today {
           background: var(--ca-navy);
@@ -493,6 +526,11 @@ export default function ChezAdilApp() {
         .ca-item {
           border-bottom: 1px solid #E4DFD1;
           padding: 12px 0;
+          transition: transform 0.2s ease, padding-left 0.2s ease;
+        }
+        .ca-item:hover, .ca-item:active {
+          transform: translateX(2px);
+          padding-left: 4px;
         }
         .ca-item:last-child { border-bottom: none; }
         .ca-item-top {
@@ -543,6 +581,12 @@ export default function ChezAdilApp() {
           border-radius: 10px;
           padding: 12px 10px;
           text-align: center;
+          transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .ca-mini-card:hover, .ca-mini-card:active {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 14px rgba(22,48,63,0.1);
+          border-color: var(--ca-brass);
         }
         .ca-mini-card-name {
           font-family: 'Oswald', sans-serif;
@@ -571,7 +615,10 @@ export default function ChezAdilApp() {
           font-size: 13px;
           text-transform: uppercase;
           cursor: pointer;
+          transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
         }
+        .ca-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(22,48,63,0.18); }
+        .ca-btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
         .ca-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .ca-btn-brass { background: var(--ca-brass); color: var(--ca-navy); }
         .ca-fineprint { font-size: 11px; color: var(--ca-steel); margin-top: 10px; text-align: center; }
@@ -608,7 +655,15 @@ export default function ChezAdilApp() {
           border-radius: 8px;
           margin-bottom: 8px;
           background: white;
+          transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
         }
+        .ca-video-link:hover .ca-video, .ca-video-link:active .ca-video {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 14px rgba(22,48,63,0.1);
+          border-color: var(--ca-brass);
+        }
+        .ca-video-thumb-img { transition: transform 0.3s ease; }
+        .ca-video-link:hover .ca-video-thumb-img { transform: scale(1.04); }
         .ca-video-title { font-size: 13px; font-weight: 600; color: var(--ca-navy); }
         .ca-video-sub { font-size: 11px; color: var(--ca-steel); }
         .ca-cta-yt, .ca-cta-insta {
@@ -623,6 +678,11 @@ export default function ChezAdilApp() {
           font-family: 'Oswald', sans-serif;
           font-size: 13px;
           text-transform: uppercase;
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .ca-cta-yt:hover, .ca-cta-insta:hover, .ca-cta-yt:active, .ca-cta-insta:active {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 14px rgba(22,48,63,0.16);
         }
         .ca-cta-insta { background: var(--ca-navy); color: var(--ca-cream); }
         .ca-video-thumb-img {
@@ -648,6 +708,11 @@ export default function ChezAdilApp() {
           font-size: 13px;
           letter-spacing: 0.03em;
           text-transform: uppercase;
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .ca-cta-contact:hover, .ca-cta-contact:active {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 14px rgba(22,48,63,0.18);
         }
 
         /* ---- Popup exception ---- */
@@ -660,6 +725,7 @@ export default function ChezAdilApp() {
           justify-content: center;
           padding: 24px;
           z-index: 50;
+          animation: ca-fade-in 0.25s ease both;
         }
         .ca-popup-card {
           background: var(--ca-cream);
@@ -669,6 +735,7 @@ export default function ChezAdilApp() {
           width: 100%;
           border-top: 4px solid var(--ca-brass);
           box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+          animation: ca-pop-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
         }
         .ca-popup-eyebrow {
           font-size: 11px;
@@ -761,13 +828,15 @@ export default function ChezAdilApp() {
 
       <div className="ca-body">
         {tab === "planning" && (
-          <div>
+          <div className="ca-fade-in-section" key="planning">
             <div className="ca-reviews" aria-label="Avis clients">
-              <div className="ca-reviews-stars">
-                {"★".repeat(REVIEWS[reviewIdx].rating)}
+              <div className="ca-reviews-fade" key={reviewIdx}>
+                <div className="ca-reviews-stars">
+                  {"★".repeat(REVIEWS[reviewIdx].rating)}
+                </div>
+                <p className="ca-reviews-text">« {REVIEWS[reviewIdx].text} »</p>
+                <div className="ca-reviews-author">— {REVIEWS[reviewIdx].author}</div>
               </div>
-              <p className="ca-reviews-text">« {REVIEWS[reviewIdx].text} »</p>
-              <div className="ca-reviews-author">— {REVIEWS[reviewIdx].author}</div>
               <div className="ca-reviews-dots">
                 {REVIEWS.map((_, i) => (
                   <span
@@ -833,7 +902,7 @@ export default function ChezAdilApp() {
         )}
 
         {tab === "menu" && (
-          <div>
+          <div className="ca-fade-in-section" key="menu">
             <div className="ca-menu-halo" aria-hidden="true" />
             <div className="ca-eyebrow">La carte</div>
             <h3 className="ca-h3">Nos burgers</h3>
@@ -879,7 +948,7 @@ export default function ChezAdilApp() {
         )}
 
         {tab === "prestations" && (
-          <div>
+          <div className="ca-fade-in-section" key="prestations">
             <div className="ca-eyebrow">Événements privés</div>
             <h3 className="ca-h3">Demande de privatisation</h3>
             <p className="ca-item-desc" style={{ marginBottom: 14 }}>
@@ -980,7 +1049,7 @@ export default function ChezAdilApp() {
         )}
 
         {tab === "videos" && (
-          <div>
+          <div className="ca-fade-in-section" key="videos">
             <div className="ca-eyebrow">Dans les coulisses</div>
             <h3 className="ca-h3">Dernières vidéos</h3>
             {VIDEOS.map((v) => (
@@ -1025,7 +1094,7 @@ export default function ChezAdilApp() {
         )}
 
         {tab === "bio" && (
-          <div>
+          <div className="ca-fade-in-section" key="bio">
             <div className="ca-eyebrow">Notre histoire</div>
             <h3 className="ca-h3">De Burger Avenue à Chez Adil</h3>
             <p className="ca-item-desc">{BIO_TEXT}</p>
