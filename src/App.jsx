@@ -111,7 +111,11 @@ const VIDEOS = [
   { title: "Short #3", url: "https://www.youtube.com/shorts/w17B8XLRtJg", id: "w17B8XLRtJg" },
 ];
 
-const BIO_TEXT = `Tout a commencé à Burger Avenue, un petit resto à la Demi-Lune. Puis est venu le Covid, une pause forcée... et un retour, mais autrement : en food truck. Une autre vision, un autre défi. Aujourd'hui, si Chez Adil existe, c'est grâce à mes clients — ce sont eux qui ont humanisé cette aventure.`;
+const BIO_PARAGRAPHS = [
+  "En 2016, je me suis lancé à la Demi-Lune sans aucune expérience dans le burger ni dans la restauration. J'avais juste une idée fixe : utiliser du frais, faire de bons burgers et créer un lieu convivial. Au tout début, pour me faire connaître, je devais moi-même sortir dans la rue distribuer mes burgers. C'est là que j'ai tout appris, sur le tas.",
+  "Après une pause forcée de quelques années, l'envie de reprendre était trop forte, mais avec un besoin de bouger, de respirer et de sortir d'entre quatre murs. Le food truck s'est imposé comme une évidence.",
+  "Aujourd'hui, l'aventure prend un nouveau virage avec de nouveaux emplacements et des privatisations. Le décor change et les défis aussi, mais l'essentiel ne bouge pas : proposer aux anciens la même qualité et le même goût qu'au premier jour, et faire découvrir l'esprit Chez Adil aux nouveaux. Merci d'être là !",
+];
 
 const GOOGLE_MAPS_URL = "https://maps.app.goo.gl/fnm2r5Mq3Ly66z7i7";
 
@@ -757,6 +761,43 @@ export default function ChezAdilApp() {
           color: var(--ca-ink);
           margin: 0 0 16px;
         }
+
+        .ca-bio-duo {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+          margin: 14px 0;
+        }
+        .ca-bio-duo-item {
+          position: relative;
+          border-radius: 10px;
+          overflow: hidden;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .ca-bio-duo-item:hover, .ca-bio-duo-item:active {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 16px rgba(22,48,63,0.18);
+        }
+        .ca-bio-duo-item img {
+          width: 100%;
+          height: 170px;
+          object-fit: cover;
+          display: block;
+        }
+        .ca-bio-duo-label {
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(to top, rgba(22,48,63,0.9), rgba(22,48,63,0));
+          color: var(--ca-cream);
+          font-family: 'Oswald', sans-serif;
+          font-size: 11px;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          text-align: center;
+          padding: 22px 4px 8px;
+        }
       `}</style>
 
       {showPopup && (
@@ -1096,8 +1137,23 @@ export default function ChezAdilApp() {
         {tab === "bio" && (
           <div className="ca-fade-in-section" key="bio">
             <div className="ca-eyebrow">Notre histoire</div>
-            <h3 className="ca-h3">De Burger Avenue à Chez Adil</h3>
-            <p className="ca-item-desc">{BIO_TEXT}</p>
+            <h3 className="ca-h3">De la Demi-Lune à Chez Adil</h3>
+
+            <p className="ca-item-desc">{BIO_PARAGRAPHS[0]}</p>
+
+            <div className="ca-bio-duo">
+              <div className="ca-bio-duo-item">
+                <img src="/images/bio/burger-avenue-cuisine-menu.jpg" alt="Adil en cuisine à la Demi-Lune" />
+                <span className="ca-bio-duo-label">À la Demi-Lune</span>
+              </div>
+              <div className="ca-bio-duo-item">
+                <img src="/images/bio/adil-food-truck.jpg" alt="Adil dans le food truck aujourd'hui" />
+                <span className="ca-bio-duo-label">Aujourd'hui</span>
+              </div>
+            </div>
+
+            <p className="ca-item-desc">{BIO_PARAGRAPHS[1]}</p>
+            <p className="ca-item-desc">{BIO_PARAGRAPHS[2]}</p>
           </div>
         )}
       </div>
