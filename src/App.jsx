@@ -81,7 +81,6 @@ const VIDEOS = [
   { title: "Short #3", url: "https://www.youtube.com/shorts/w17B8XLRtJg", id: "w17B8XLRtJg" },
 ];
 
-// TODO Adil : remplace ce texte par ton histoire (depuis Burger Avenue jusqu'à Chez Adil).
 const BIO_TEXT = `À compléter : raconte ici ton histoire, depuis tes débuts chez Burger Avenue jusqu'à la création de Chez Adil.`;
 
 const GOOGLE_MAPS_URL = "https://maps.app.goo.gl/fnm2r5Mq3Ly66z7i7";
@@ -106,7 +105,9 @@ const REVIEWS = [
 
 export default function ChezAdilApp() {
   const [tab, setTab] = useState("planning");
-  const todayIdx = new Date().getDay();
+  
+  const currentDayNum = new Date().getDay();
+  const todayStop = STOPS.find((s) => s.day === currentDayNum) || STOPS[0];
 
   const [form, setForm] = useState({
     nom: "",
@@ -558,9 +559,9 @@ export default function ChezAdilApp() {
         </a>
         <p className="ca-tagline">Burger premium &amp; artisanal · depuis 2016 · Caen &amp; alentours</p>
         <div className="ca-today-strip">
-          {STOPS[todayIdx].place ? (
+          {todayStop.place ? (
             <>
-              Aujourd'hui : <b>{STOPS[todayIdx].place}</b> — à partir de 19h
+              Aujourd'hui : <b>{todayStop.place}</b> — à partir de 19h
             </>
           ) : (
             <>Pas de service aujourd'hui — prochaine étape dans l'onglet Emplacements</>
@@ -614,12 +615,12 @@ export default function ChezAdilApp() {
             {STOPS.map((s) => (
               <div
                 key={s.day}
-                className={`ca-stop ${s.day === todayIdx ? "today" : ""} ${!s.place ? "off" : ""}`}
+                className={`ca-stop ${s.day === currentDayNum ? "today" : ""} ${!s.place ? "off" : ""}`}
               >
                 <div>
                   <div className="ca-stop-day">
                     {s.label}
-                    {s.day === todayIdx && <span className="ca-badge-today">Aujourd'hui</span>}
+                    {s.day === currentDayNum && <span className="ca-badge-today">Aujourd'hui</span>}
                   </div>
                   {s.place && (
                     <a
@@ -785,7 +786,7 @@ export default function ChezAdilApp() {
           <div>
             <div className="ca-eyebrow">Dans les coulisses</div>
             <h3 className="ca-h3">Dernières vidéos</h3>
-            {VIDEOS.map((v, i) => (
+            {VIDEOS.map((v) => (
               <a
                 className="ca-video-link"
                 href={v.url}
