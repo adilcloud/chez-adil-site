@@ -112,7 +112,7 @@ const VIDEOS = [
 ];
 
 const BIO_PARAGRAPHS = [
-  "En 2016, je me suis lancé à la Demi-Lune sans aucune expérience dans le burger ni dans la restauration. J'avais juste une idée fixe : utiliser du frais, faire de bons burgers et créer un lieu convivial. Au tout début, pour me faire connaître, je devais moi-même sortir dans la rue distribuer mes burgers. C'est là que j'ai tout appris, sur le tas.",
+  "Été 2016, j'ouvre mon petit restaurant Burger Avenue à la Demi-Lune, sans aucune expérience dans le burger ni dans la restauration. J'avais juste une idée fixe : utiliser du frais, faire de bons burgers et créer un lieu convivial. Au tout début, pour me faire connaître, je devais moi-même sortir dans la rue distribuer mes burgers. C'est là que j'ai tout appris, sur le tas.",
   "Après une pause forcée de quelques années, l'envie de reprendre était trop forte, mais avec un besoin de bouger, de respirer et de sortir d'entre quatre murs. Le food truck s'est imposé comme une évidence.",
   "Aujourd'hui, l'aventure prend un nouveau virage avec de nouveaux emplacements et des privatisations. Le décor change et les défis aussi, mais l'essentiel ne bouge pas : proposer aux anciens la même qualité et le même goût qu'au premier jour, et faire découvrir l'esprit Chez Adil aux nouveaux. Merci d'être là !",
 ];
@@ -798,6 +798,22 @@ export default function ChezAdilApp() {
           text-align: center;
           padding: 22px 4px 8px;
         }
+        .ca-bio-text {
+          font-size: 13.5px;
+          font-style: italic;
+          color: var(--ca-ink);
+          margin-top: 10px;
+          line-height: 1.55;
+        }
+        .ca-bio-signature {
+          font-family: 'Oswald', sans-serif;
+          font-style: italic;
+          font-size: 15px;
+          letter-spacing: 0.03em;
+          color: var(--ca-brass);
+          text-align: right;
+          margin-top: 16px;
+        }
       `}</style>
 
       {showPopup && (
@@ -1139,7 +1155,7 @@ export default function ChezAdilApp() {
             <div className="ca-eyebrow">Notre histoire</div>
             <h3 className="ca-h3">De la Demi-Lune à Chez Adil</h3>
 
-            <p className="ca-item-desc">{BIO_PARAGRAPHS[0]}</p>
+            <p className="ca-bio-text">{BIO_PARAGRAPHS[0]}</p>
 
             <div className="ca-bio-duo">
               <div className="ca-bio-duo-item">
@@ -1152,8 +1168,9 @@ export default function ChezAdilApp() {
               </div>
             </div>
 
-            <p className="ca-item-desc">{BIO_PARAGRAPHS[1]}</p>
-            <p className="ca-item-desc">{BIO_PARAGRAPHS[2]}</p>
+            <p className="ca-bio-text">{BIO_PARAGRAPHS[1]}</p>
+            <p className="ca-bio-text">{BIO_PARAGRAPHS[2]}</p>
+            <p className="ca-bio-signature">— Adil</p>
           </div>
         )}
       </div>
