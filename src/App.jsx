@@ -780,7 +780,7 @@ export default function ChezAdilApp() {
         }
         .ca-bio-duo-item img {
           width: 100%;
-          height: 170px;
+          aspect-ratio: 3 / 4;
           object-fit: cover;
           display: block;
         }
