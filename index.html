@@ -6,7 +6,7 @@
     <title>Chez Adil - Burger Street Food à Caen</title>
     <meta
       name="description"
-      content="Chez Adil, food truck de burgers premium et artisanaux à Caen depuis 2016. Emplacements de la semaine, carte, privatisations d'événements."
+      content="Chez Adil, food truck de burgers halal premium et artisanaux à Caen depuis 2016. Emplacements de la semaine, carte, privatisations d'événements."
     />
 
     <!-- PWA -->
@@ -24,7 +24,7 @@
     <meta property="og:title" content="Chez Adil - Burger Street Food à Caen" />
     <meta
       property="og:description"
-      content="Food truck de burgers premium et artisanaux à Caen depuis 2016. Emplacements, carte, privatisations."
+      content="Food truck de burgers halal premium et artisanaux à Caen depuis 2016. Emplacements, carte, privatisations."
     />
     <meta property="og:image" content="https://chezadilcaen.fr/og-image.jpg" />
     <meta property="og:url" content="https://chezadilcaen.fr/" />
@@ -33,9 +33,37 @@
     <meta name="twitter:title" content="Chez Adil - Burger Street Food à Caen" />
     <meta
       name="twitter:description"
-      content="Food truck de burgers premium et artisanaux à Caen depuis 2016."
+      content="Food truck de burgers halal premium et artisanaux à Caen depuis 2016."
     />
     <meta name="twitter:image" content="https://chezadilcaen.fr/og-image.jpg" />
+
+    <!-- Données structurées pour Google (invisible, aide au référencement local) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FoodEstablishment",
+        "name": "Chez Adil",
+        "description": "Food truck de burgers halal premium et artisanaux à Caen depuis 2016. Emplacements de la semaine, privatisations d'événements.",
+        "servesCuisine": ["Burger", "Halal", "Street Food"],
+        "priceRange": "€€",
+        "areaServed": {
+          "@type": "City",
+          "name": "Caen"
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Caen",
+          "addressRegion": "Normandie",
+          "addressCountry": "FR"
+        },
+        "image": "https://chezadilcaen.fr/og-image.jpg",
+        "url": "https://chezadilcaen.fr/",
+        "makesOffer": {
+          "@type": "Offer",
+          "name": "Privatisation pour événements"
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
