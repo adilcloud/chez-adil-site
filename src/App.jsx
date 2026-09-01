@@ -16,7 +16,37 @@ function mapsUrl(place) {
 
 const PHONE_DISPLAY = "06 70 79 78 56";
 const PHONE_TEL = "+33670797856";
-const PHONE_WA = "33670797856";
+const EMAIL_PRO = "chezadil.streetfood@gmail.com";
+
+// ---- Exception ponctuelle d'emplacement ----
+// Pour désactiver le popup à la main avant la date de fin, passe "active" à false.
+const EXCEPTION = {
+  active: true,
+  date: "2026-09-05", // format AAAA-MM-JJ, jour concerné par l'exception
+  place: "Église Saint-Nicolas, Caen",
+  event: "Festival des Cultures Alternatives",
+  detail: "Présent toute la journée — pas de service à Ifs ce jour-là.",
+};
+
+function todayLocalStr() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+// Le popup reste actif (à chaque visite) jusqu'au samedi soir de la date indiquée.
+function isExceptionWindowOpen() {
+  if (!EXCEPTION.active) return false;
+  const end = new Date(`${EXCEPTION.date}T23:59:59`);
+  return new Date() <= end;
+}
+
+// Vrai uniquement le jour J de l'exception (pour l'onglet Emplacements).
+function isExceptionToday() {
+  return EXCEPTION.active && todayLocalStr() === EXCEPTION.date;
+}
 
 const BURGERS = [
   {
@@ -81,7 +111,7 @@ const VIDEOS = [
   { title: "Short #3", url: "https://www.youtube.com/shorts/w17B8XLRtJg", id: "w17B8XLRtJg" },
 ];
 
-const BIO_TEXT = `À compléter : raconte ici ton histoire, depuis tes débuts chez Burger Avenue jusqu'à la création de Chez Adil.`;
+const BIO_TEXT = `Tout a commencé à Burger Avenue, un petit resto à la Demi-Lune. Puis est venu le Covid, une pause forcée... et un retour, mais autrement : en food truck. Une autre vision, un autre défi. Aujourd'hui, si Chez Adil existe, c'est grâce à mes clients — ce sont eux qui ont humanisé cette aventure.`;
 
 const GOOGLE_MAPS_URL = "https://maps.app.goo.gl/fnm2r5Mq3Ly66z7i7";
 
@@ -103,11 +133,58 @@ const REVIEWS = [
   },
 ];
 
+function PhoneIcon({ size = 14 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      style={{ verticalAlign: "-2px", marginRight: "5px" }}
+    >
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+    </svg>
+  );
+}
+
+function CarIcon({ size = 12 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      style={{ verticalAlign: "-2px", marginRight: "4px" }}
+    >
+      <path d="M5 11l1.4-3.6A2 2 0 0 1 8.26 6h7.48a2 2 0 0 1 1.86 1.4L19 11" />
+      <rect x="3" y="11" width="18" height="5" rx="1.5" />
+      <circle cx="7.5" cy="18" r="1.5" />
+      <circle cx="16.5" cy="18" r="1.5" />
+    </svg>
+  );
+}
+
 export default function ChezAdilApp() {
   const [tab, setTab] = useState("planning");
-  
+
   const currentDayNum = new Date().getDay();
-  const todayStop = STOPS.find((s) => s.day === currentDayNum) || STOPS[0];
+  const exceptionToday = isExceptionToday();
+  const todayStopBase = STOPS.find((s) => s.day === currentDayNum) || STOPS[0];
+  const todayStop = exceptionToday
+    ? { ...todayStopBase, place: `${EXCEPTION.place} (${EXCEPTION.event})` }
+    : todayStopBase;
+
+  const [showPopup, setShowPopup] = useState(isExceptionWindowOpen());
 
   const [form, setForm] = useState({
     nom: "",
@@ -133,8 +210,8 @@ export default function ChezAdilApp() {
 
   function submitRequest(e) {
     e.preventDefault();
+    const subject = `Demande de privatisation – ${form.prenom} ${form.nom}`.trim();
     const lines = [
-      "Demande de privatisation Chez Adil",
       `Nom : ${form.nom}`,
       `Prénom : ${form.prenom}`,
       form.entreprise ? `Entreprise : ${form.entreprise}` : null,
@@ -142,8 +219,9 @@ export default function ChezAdilApp() {
       `Nombre de personnes : ${form.personnes}`,
       form.evenement ? `Détails de l'événement : ${form.evenement}` : null,
     ].filter(Boolean);
-    const message = encodeURIComponent(lines.join("\n"));
-    window.open(`https://wa.me/${PHONE_WA}?text=${message}`, "_blank");
+    const body = lines.join("\n");
+    const mailto = `mailto:${EMAIL_PRO}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailto;
     setSent(true);
   }
 
@@ -171,6 +249,7 @@ export default function ChezAdilApp() {
           max-width: 480px;
           margin: 0 auto;
           box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+          position: relative;
         }
         .ca-app * { box-sizing: border-box; }
         .ca-app button:focus-visible, .ca-app [role="tab"]:focus-visible {
@@ -284,7 +363,8 @@ export default function ChezAdilApp() {
           pointer-events: none;
         }
         .ca-phone {
-          display: inline-block;
+          display: inline-flex;
+          align-items: center;
           margin-top: 4px;
           font-size: 13px;
           font-weight: 600;
@@ -308,27 +388,37 @@ export default function ChezAdilApp() {
         }
         .ca-today-strip b { color: var(--ca-brass-light); }
 
+        /* ---- Onglets façon languettes de classeur ---- */
         .ca-tabs {
           display: flex;
-          background: var(--ca-navy-2);
+          background: var(--ca-navy);
+          gap: 3px;
+          padding: 8px 6px 0;
         }
         .ca-tab {
           flex: 1;
-          padding: 12px 4px;
+          padding: 10px 3px 9px;
           text-align: center;
-          background: none;
+          background: var(--ca-navy-2);
           border: none;
           color: rgba(243,239,230,0.55);
           font-family: 'Oswald', sans-serif;
-          font-size: 12px;
-          letter-spacing: 0.04em;
+          font-size: 11px;
+          letter-spacing: 0.03em;
           text-transform: uppercase;
           cursor: pointer;
-          border-bottom: 3px solid transparent;
+          border-radius: 9px 9px 0 0;
+          position: relative;
+          top: 5px;
+          transition: top 0.15s ease, background 0.15s ease, color 0.15s ease;
         }
         .ca-tab.active {
-          color: var(--ca-cream);
-          border-bottom: 3px solid var(--ca-brass);
+          background: var(--ca-cream);
+          color: var(--ca-navy);
+          font-weight: 600;
+          top: 0;
+          box-shadow: 0 -3px 6px rgba(0,0,0,0.15);
+          z-index: 2;
         }
 
         .ca-body { padding: 18px 16px 28px; }
@@ -364,7 +454,7 @@ export default function ChezAdilApp() {
         }
         .ca-stop.today .ca-stop-place { color: var(--ca-brass-light); }
         .ca-stop.off { opacity: 0.45; }
-        .ca-stop-day { font-family: 'Oswald', sans-serif; font-size: 13px; letter-spacing: 0.03em; }
+        .ca-stop-day { font-family: 'Oswald', sans-serif; font-size: 13px; letter-spacing: 0.03em; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
         .ca-stop-place-link {
           display: flex;
           align-items: baseline;
@@ -372,9 +462,9 @@ export default function ChezAdilApp() {
           text-decoration: none;
         }
         .ca-stop-place { font-size: 13px; font-weight: 600; color: inherit; }
-        .ca-stop-gps { font-size: 11px; color: var(--ca-brass); }
+        .ca-stop-gps { font-size: 11px; color: var(--ca-brass); display: inline-flex; align-items: center; }
         .ca-stop.today .ca-stop-gps { color: var(--ca-brass-light); }
-        .ca-stop-time { font-size: 11px; color: var(--ca-steel); }
+        .ca-stop-time { font-size: 11px; color: var(--ca-steel); white-space: nowrap; margin-left: 8px; }
         .ca-stop.today .ca-stop-time { color: rgba(243,239,230,0.7); }
         .ca-badge-today {
           font-size: 10px;
@@ -384,7 +474,20 @@ export default function ChezAdilApp() {
           border-radius: 4px;
           font-weight: 700;
           text-transform: uppercase;
-          margin-left: 6px;
+        }
+        .ca-badge-exception {
+          font-size: 10px;
+          background: #B5482F;
+          color: var(--ca-cream);
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-weight: 700;
+          text-transform: uppercase;
+        }
+        .ca-stop-exception-note {
+          font-size: 11.5px;
+          margin-top: 4px;
+          color: var(--ca-brass-light);
         }
 
         .ca-item {
@@ -403,14 +506,51 @@ export default function ChezAdilApp() {
         .ca-item-note { font-size: 11px; color: var(--ca-steel); margin-top: 2px; }
         .ca-item-desc { font-size: 13px; color: var(--ca-ink); margin-top: 4px; line-height: 1.4; }
 
+        .ca-frites-box {
+          margin-top: 14px;
+          background: white;
+          border: 1.5px dashed var(--ca-brass);
+          border-radius: 10px;
+          padding: 12px 14px;
+        }
+        .ca-frites-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-family: 'Oswald', sans-serif;
+          font-size: 14px;
+          color: var(--ca-navy);
+        }
+        .ca-frites-desc { font-size: 12px; color: var(--ca-steel); margin-top: 4px; }
+
         .ca-section-title {
           font-family: 'Oswald', sans-serif;
           font-size: 13px;
           text-transform: uppercase;
           letter-spacing: 0.06em;
           color: var(--ca-steel);
-          margin: 20px 0 6px;
+          margin: 20px 0 8px;
         }
+
+        .ca-card-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+        }
+        .ca-mini-card {
+          background: white;
+          border: 1px solid #E4DFD1;
+          border-radius: 10px;
+          padding: 12px 10px;
+          text-align: center;
+        }
+        .ca-mini-card-name {
+          font-family: 'Oswald', sans-serif;
+          font-size: 13px;
+          color: var(--ca-navy);
+          margin-bottom: 4px;
+        }
+        .ca-mini-card-price { color: var(--ca-brass); font-weight: 700; font-size: 13px; }
 
         .ca-card {
           background: white;
@@ -469,17 +609,6 @@ export default function ChezAdilApp() {
           margin-bottom: 8px;
           background: white;
         }
-        .ca-video-thumb {
-          width: 56px; height: 56px;
-          background: var(--ca-navy);
-          border-radius: 6px;
-          flex-shrink: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--ca-brass-light);
-          font-size: 18px;
-        }
         .ca-video-title { font-size: 13px; font-weight: 600; color: var(--ca-navy); }
         .ca-video-sub { font-size: 11px; color: var(--ca-steel); }
         .ca-cta-yt, .ca-cta-insta {
@@ -505,17 +634,6 @@ export default function ChezAdilApp() {
         }
         .ca-video-link { text-decoration: none; }
 
-        .ca-presta-item {
-          padding: 12px 0;
-          border-bottom: 1px solid #E4DFD1;
-        }
-        .ca-presta-item:last-child { border-bottom: none; }
-        .ca-presta-title {
-          font-family: 'Oswald', sans-serif;
-          font-size: 15px;
-          color: var(--ca-navy);
-          margin-bottom: 4px;
-        }
         .ca-presta-desc { font-size: 13px; color: var(--ca-ink); line-height: 1.45; }
         .ca-cta-contact {
           display: block;
@@ -531,7 +649,64 @@ export default function ChezAdilApp() {
           letter-spacing: 0.03em;
           text-transform: uppercase;
         }
+
+        /* ---- Popup exception ---- */
+        .ca-popup-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(10, 20, 26, 0.72);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+          z-index: 50;
+        }
+        .ca-popup-card {
+          background: var(--ca-cream);
+          border-radius: 14px;
+          padding: 22px 20px;
+          max-width: 340px;
+          width: 100%;
+          border-top: 4px solid var(--ca-brass);
+          box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+        }
+        .ca-popup-eyebrow {
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: #B5482F;
+          font-weight: 700;
+          margin-bottom: 6px;
+        }
+        .ca-popup-title {
+          font-family: 'Oswald', sans-serif;
+          font-size: 18px;
+          color: var(--ca-navy);
+          margin: 0 0 10px;
+        }
+        .ca-popup-text {
+          font-size: 14px;
+          line-height: 1.5;
+          color: var(--ca-ink);
+          margin: 0 0 16px;
+        }
       `}</style>
+
+      {showPopup && (
+        <div className="ca-popup-overlay" role="dialog" aria-modal="true" aria-label="Info emplacement exceptionnel">
+          <div className="ca-popup-card">
+            <div className="ca-popup-eyebrow">Changement exceptionnel</div>
+            <h3 className="ca-popup-title">On bouge samedi 5 septembre !</h3>
+            <p className="ca-popup-text">
+              Ce jour-là, pas de camion à Ifs : on sera au <strong>{EXCEPTION.event}</strong>,{" "}
+              <strong>{EXCEPTION.place}</strong>, <strong>toute la journée</strong>.
+            </p>
+            <button className="ca-btn ca-btn-brass" onClick={() => setShowPopup(false)}>
+              J'ai compris
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="ca-header">
         <div className="ca-rivet" style={{ top: 10, left: 10 }} />
@@ -555,13 +730,14 @@ export default function ChezAdilApp() {
           Chez <span>Adil</span>
         </p>
         <a className="ca-phone" href={`tel:${PHONE_TEL}`}>
+          <PhoneIcon />
           {PHONE_DISPLAY}
         </a>
         <p className="ca-tagline">Burger premium &amp; artisanal · depuis 2016 · Caen &amp; alentours</p>
         <div className="ca-today-strip">
           {todayStop.place ? (
             <>
-              Aujourd'hui : <b>{todayStop.place}</b> — à partir de 19h
+              Aujourd'hui : <b>{todayStop.place}</b> — {exceptionToday ? "toute la journée" : "à partir de 19h"}
             </>
           ) : (
             <>Pas de service aujourd'hui — prochaine étape dans l'onglet Emplacements</>
@@ -612,31 +788,47 @@ export default function ChezAdilApp() {
 
             <div className="ca-eyebrow">Semaine type</div>
             <h3 className="ca-h3">Nos emplacements</h3>
-            {STOPS.map((s) => (
-              <div
-                key={s.day}
-                className={`ca-stop ${s.day === currentDayNum ? "today" : ""} ${!s.place ? "off" : ""}`}
-              >
-                <div>
-                  <div className="ca-stop-day">
-                    {s.label}
-                    {s.day === currentDayNum && <span className="ca-badge-today">Aujourd'hui</span>}
+            {STOPS.map((s) => {
+              const isTodayRow = s.day === currentDayNum;
+              const showException = isTodayRow && exceptionToday && s.day === 6;
+              const place = showException ? EXCEPTION.place : s.place;
+              return (
+                <div
+                  key={s.day}
+                  className={`ca-stop ${isTodayRow ? "today" : ""} ${!place ? "off" : ""}`}
+                >
+                  <div>
+                    <div className="ca-stop-day">
+                      {s.label}
+                      {isTodayRow && <span className="ca-badge-today">Aujourd'hui</span>}
+                      {showException && <span className="ca-badge-exception">Exceptionnel</span>}
+                    </div>
+                    {place && (
+                      <a
+                        className="ca-stop-place-link"
+                        href={mapsUrl(place)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <span className="ca-stop-place">{place}</span>
+                        <span className="ca-stop-gps">
+                          <CarIcon />
+                          Itinéraire
+                        </span>
+                      </a>
+                    )}
+                    {showException && (
+                      <div className="ca-stop-exception-note">{EXCEPTION.event} — {EXCEPTION.detail}</div>
+                    )}
                   </div>
-                  {s.place && (
-                    <a
-                      className="ca-stop-place-link"
-                      href={mapsUrl(s.place)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <span className="ca-stop-place">{s.place}</span>
-                      <span className="ca-stop-gps">📍 Itinéraire</span>
-                    </a>
+                  {place && (
+                    <div className="ca-stop-time">
+                      {showException ? "Toute la journée" : "dès 19h"}
+                    </div>
                   )}
                 </div>
-                {s.place && <div className="ca-stop-time">dès 19h</div>}
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
@@ -645,10 +837,6 @@ export default function ChezAdilApp() {
             <div className="ca-menu-halo" aria-hidden="true" />
             <div className="ca-eyebrow">La carte</div>
             <h3 className="ca-h3">Nos burgers</h3>
-            <div className="ca-item-top" style={{ marginBottom: 12 }}>
-              <span>Frites maison</span>
-              <span className="ca-item-price" style={{ fontSize: 18 }}>+ 3,50 €</span>
-            </div>
             {BURGERS.map((b) => (
               <div className="ca-item" key={b.name}>
                 <div className="ca-item-top">
@@ -660,25 +848,33 @@ export default function ChezAdilApp() {
               </div>
             ))}
 
-            <div className="ca-section-title">Desserts</div>
-            {DESSERTS.map((d) => (
-              <div className="ca-item" key={d.name}>
-                <div className="ca-item-top">
-                  <span>{d.name}</span>
-                  <span className="ca-item-price">{d.price}</span>
-                </div>
+            <div className="ca-frites-box">
+              <div className="ca-frites-top">
+                <span>Frites maison</span>
+                <span className="ca-item-price">+ 3,50 €</span>
               </div>
-            ))}
+              <div className="ca-frites-desc">En supplément, avec n'importe quel burger.</div>
+            </div>
+
+            <div className="ca-section-title">Desserts</div>
+            <div className="ca-card-grid">
+              {DESSERTS.map((d) => (
+                <div className="ca-mini-card" key={d.name}>
+                  <div className="ca-mini-card-name">{d.name}</div>
+                  <div className="ca-mini-card-price">{d.price}</div>
+                </div>
+              ))}
+            </div>
 
             <div className="ca-section-title">Boissons</div>
-            {DRINKS.map((d) => (
-              <div className="ca-item" key={d.name}>
-                <div className="ca-item-top">
-                  <span>{d.name}</span>
-                  <span className="ca-item-price">{d.price}</span>
+            <div className="ca-card-grid">
+              {DRINKS.map((d) => (
+                <div className="ca-mini-card" key={d.name}>
+                  <div className="ca-mini-card-name">{d.name}</div>
+                  <div className="ca-mini-card-price">{d.price}</div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 
@@ -688,14 +884,15 @@ export default function ChezAdilApp() {
             <h3 className="ca-h3">Demande de privatisation</h3>
             <p className="ca-item-desc" style={{ marginBottom: 14 }}>
               Entreprise, anniversaire, mariage : remplis le formulaire, ta demande part
-              directement au camion.
+              directement par mail au camion.
             </p>
 
             {sent ? (
               <div className="ca-card">
                 <p className="ca-presta-desc">
-                  Ta demande est prête à être envoyée. Si l'appli ne s'est pas
-                  ouverte, tu peux aussi appeler directement.
+                  Ta demande est prête à être envoyée par mail. Si ton application mail ne s'est pas
+                  ouverte, tu peux nous écrire directement à{" "}
+                  <a href={`mailto:${EMAIL_PRO}`}>{EMAIL_PRO}</a> ou appeler.
                 </p>
                 <a className="ca-cta-contact" href={`tel:${PHONE_TEL}`}>
                   Appeler · {PHONE_DISPLAY}
