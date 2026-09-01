@@ -1,7 +1,5 @@
-const CACHE_NAME = "chez-adil-v1";
+const CACHE_NAME = "chez-adil-v2";
 const ASSETS_TO_CACHE = [
-  "/",
-  "/index.html",
   "/manifest.json",
   "/icon-192.png",
   "/icon-512.png",
@@ -25,8 +23,17 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+// Network-first : on va toujours chercher la dernière version en ligne.
+// Si le réseau est indisponible (mode hors-ligne), on retombe sur le cache.
 self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    fetch(event.request)
+      .then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
