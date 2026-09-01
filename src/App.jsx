@@ -112,7 +112,7 @@ const VIDEOS = [
 ];
 
 const BIO_PARAGRAPHS = [
-  "Été 2016, j'ouvre mon petit restaurant Burger Avenue à la Demi-Lune, sans aucune expérience dans le burger ni dans la restauration. J'avais juste une idée fixe : utiliser du frais, faire de bons burgers et créer un lieu convivial. Au tout début, pour me faire connaître, je devais moi-même sortir dans la rue distribuer mes burgers. C'est là que j'ai tout appris, sur le tas.",
+  "Été 2016, j'ouvre mon petit restaurant Burger Avenue à la Demi-Lune, sans aucune expérience dans le burger ni dans la restauration. J'avais juste une idée fixe : utiliser du frais, du halal, faire de bons burgers et créer un lieu convivial. Au tout début, pour me faire connaître, je devais moi-même sortir dans la rue distribuer mes burgers. C'est là que j'ai tout appris, sur le tas.",
   "Après une pause forcée de quelques années, l'envie de reprendre était trop forte, mais avec un besoin de bouger, de respirer et de sortir d'entre quatre murs. Le food truck s'est imposé comme une évidence.",
   "Aujourd'hui, l'aventure prend un nouveau virage avec de nouveaux emplacements et des privatisations. Le décor change et les défis aussi, mais l'essentiel ne bouge pas : proposer aux anciens la même qualité et le même goût qu'au premier jour, et faire découvrir l'esprit Chez Adil aux nouveaux. Merci d'être là !",
 ];
@@ -850,9 +850,9 @@ export default function ChezAdilApp() {
             </text>
           </svg>
         </div>
-        <p className="ca-logo">
+        <h1 className="ca-logo">
           Chez <span>Adil</span>
-        </p>
+        </h1>
         <a className="ca-phone" href={`tel:${PHONE_TEL}`}>
           <PhoneIcon />
           {PHONE_DISPLAY}
@@ -1153,18 +1153,18 @@ export default function ChezAdilApp() {
         {tab === "bio" && (
           <div className="ca-fade-in-section" key="bio">
             <div className="ca-eyebrow">Notre histoire</div>
-            <h3 className="ca-h3">De la Demi-Lune à Chez Adil</h3>
+            <h3 className="ca-h3">De Burger Avenue à Chez Adil</h3>
 
             <p className="ca-bio-text">{BIO_PARAGRAPHS[0]}</p>
 
             <div className="ca-bio-duo">
               <div className="ca-bio-duo-item">
-                <img src="/images/bio/burger-avenue-cuisine-menu.jpg" alt="Adil en cuisine à la Demi-Lune" />
-                <span className="ca-bio-duo-label">À la Demi-Lune</span>
+                <img src="/images/bio/burger-avenue-cuisine-menu.jpg" alt="Adil en cuisine à Burger Avenue, la Demi-Lune" />
+                <span className="ca-bio-duo-label">Burger Avenue 2016</span>
               </div>
               <div className="ca-bio-duo-item">
-                <img src="/images/bio/adil-food-truck.jpg" alt="Adil dans le food truck aujourd'hui" />
-                <span className="ca-bio-duo-label">Aujourd'hui</span>
+                <img src="/images/bio/adil-food-truck.jpg" alt="Adil dans le food truck Chez Adil" />
+                <span className="ca-bio-duo-label">Chez Adil 2026</span>
               </div>
             </div>
 
