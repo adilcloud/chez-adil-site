@@ -28,12 +28,26 @@ const EXCEPTION = {
   detail: "Présent toute la journée — pas de service à Ifs ce jour-là.",
 };
 
+// ---- Annonce "pas de service ce soir" ----
+// À activer la veille d'un gros événement (préparation) ou toute autre soirée sans service.
+// Passe "active" à false pour la désactiver, ou change "date" pour la prochaine fois.
+const CLOSURE_NOTICE = {
+  active: true,
+  date: "2026-09-04", // format AAAA-MM-JJ, le soir concerné
+  message:
+    "Pas de service ce soir à Mondeville : on est en pleine préparation pour demain, 100% produits frais. On vous attend dès demain !",
+};
+
 function todayLocalStr() {
   const d = new Date();
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
+}
+
+function isClosureNoticeActive() {
+  return CLOSURE_NOTICE.active && CLOSURE_NOTICE.date === todayLocalStr();
 }
 
 // Le popup reste actif (à chaque visite) jusqu'au samedi soir de la date indiquée.
@@ -135,6 +149,11 @@ const REVIEWS = [
     rating: 5,
     text: "Sans aucun doute le meilleur spot de burger dans l'agglomération caennaise. Pas assez connu à mon goût, foncez-y.",
   },
+  {
+    author: "Chanra.O",
+    rating: 5,
+    text: "1ère commande et ce ne sera pas la dernière. Le burger classique une tuerie avec vrai steak maison, ne parlons pas des frites maison qui font toute la différence. On s'est juste régalé avec ma fille. Merci pour cette découverte. Allez-y les yeux fermés !",
+  },
 ];
 
 function PhoneIcon({ size = 14 }) {
@@ -178,6 +197,27 @@ function CarIcon({ size = 12 }) {
   );
 }
 
+function ShareIcon({ size = 15 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      style={{ verticalAlign: "-3px", margin: "0 2px" }}
+    >
+      <path d="M12 2v13" />
+      <path d="M8 6l4-4 4 4" />
+      <rect x="4" y="10" width="16" height="11" rx="2" />
+    </svg>
+  );
+}
+
 export default function ChezAdilApp() {
   const [tab, setTab] = useState("planning");
 
@@ -189,6 +229,7 @@ export default function ChezAdilApp() {
     : todayStopBase;
 
   const [showPopup, setShowPopup] = useState(isExceptionWindowOpen());
+  const [showClosurePopup, setShowClosurePopup] = useState(isClosureNoticeActive());
 
   const [form, setForm] = useState({
     nom: "",
@@ -207,6 +248,50 @@ export default function ChezAdilApp() {
     }, 6000);
     return () => clearInterval(t);
   }, []);
+
+  // --- Bannière "installer l'application" (Android + iOS) ---
+  const [installBanner, setInstallBanner] = useState(null); // "android" | "ios" | null
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+  useEffect(() => {
+    const alreadyInstalled =
+      window.matchMedia?.("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+    const dismissed = localStorage.getItem("ca-install-dismissed");
+    if (alreadyInstalled || dismissed) return;
+
+    const ua = window.navigator.userAgent || "";
+    const isIOS = /iphone|ipad|ipod/i.test(ua) && !window.MSStream;
+
+    let timer;
+    if (isIOS) {
+      timer = setTimeout(() => setInstallBanner("ios"), 8000);
+    } else {
+      const onBeforeInstall = (e) => {
+        e.preventDefault();
+        setDeferredPrompt(e);
+        timer = setTimeout(() => setInstallBanner("android"), 8000);
+      };
+      window.addEventListener("beforeinstallprompt", onBeforeInstall);
+      return () => window.removeEventListener("beforeinstallprompt", onBeforeInstall);
+    }
+    return () => clearTimeout(timer);
+  }, []);
+
+  function dismissInstallBanner() {
+    setInstallBanner(null);
+    localStorage.setItem("ca-install-dismissed", "1");
+  }
+
+  async function handleInstallClick() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      setDeferredPrompt(null);
+    }
+    setInstallBanner(null);
+    localStorage.setItem("ca-install-dismissed", "1");
+  }
 
   function updateField(field, value) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -814,22 +899,141 @@ export default function ChezAdilApp() {
           text-align: right;
           margin-top: 16px;
         }
+
+        .ca-install-banner {
+          position: fixed;
+          left: 12px;
+          right: 12px;
+          bottom: 12px;
+          z-index: 60;
+          background: var(--ca-navy);
+          color: var(--ca-cream);
+          border-radius: 14px;
+          border: 1px solid rgba(197,155,89,0.4);
+          box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+          padding: 12px 40px 12px 14px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          animation: ca-install-slide-up 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        }
+        @keyframes ca-install-slide-up {
+          from { opacity: 0; transform: translateY(16px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .ca-install-icon { font-size: 24px; line-height: 1; flex-shrink: 0; }
+        .ca-install-text {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          flex: 1;
+          min-width: 0;
+        }
+        .ca-install-text strong {
+          font-family: 'Oswald', sans-serif;
+          font-size: 13.5px;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+        }
+        .ca-install-text span {
+          font-size: 12px;
+          color: rgba(243,239,230,0.8);
+          line-height: 1.3;
+        }
+        .ca-install-btn {
+          flex-shrink: 0;
+          padding: 8px 14px;
+          font-size: 12px;
+        }
+        .ca-install-btn-ghost {
+          flex-shrink: 0;
+          background: transparent;
+          border: 1px solid rgba(243,239,230,0.4);
+          color: var(--ca-cream);
+          border-radius: 999px;
+          padding: 7px 13px;
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
+          cursor: pointer;
+        }
+        .ca-install-close {
+          position: absolute;
+          top: 8px;
+          right: 10px;
+          background: none;
+          border: none;
+          color: rgba(243,239,230,0.6);
+          font-size: 14px;
+          cursor: pointer;
+          padding: 4px;
+        }
       `}</style>
 
-      {showPopup && (
-        <div className="ca-popup-overlay" role="dialog" aria-modal="true" aria-label="Info emplacement exceptionnel">
+      {installBanner && (
+        <div className="ca-install-banner" role="dialog" aria-label="Installer l'application">
+          <button
+            className="ca-install-close"
+            onClick={dismissInstallBanner}
+            aria-label="Fermer"
+          >
+            ✕
+          </button>
+          {installBanner === "android" ? (
+            <>
+              <div className="ca-install-icon">🍔</div>
+              <div className="ca-install-text">
+                <strong>Installe Chez Adil</strong>
+                <span>Accès rapide depuis ton écran d'accueil</span>
+              </div>
+              <button className="ca-btn ca-btn-brass ca-install-btn" onClick={handleInstallClick}>
+                Installer
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="ca-install-icon">🍔</div>
+              <div className="ca-install-text">
+                <strong>Installe Chez Adil</strong>
+                <span>
+                  Appuie sur <ShareIcon /> puis « Sur l'écran d'accueil »
+                </span>
+              </div>
+              <button className="ca-install-btn-ghost" onClick={dismissInstallBanner}>
+                Compris
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
+      {showClosurePopup ? (
+        <div className="ca-popup-overlay" role="dialog" aria-modal="true" aria-label="Pas de service ce soir">
           <div className="ca-popup-card">
-            <div className="ca-popup-eyebrow">Changement exceptionnel</div>
-            <h3 className="ca-popup-title">On bouge samedi 5 septembre !</h3>
-            <p className="ca-popup-text">
-              Ce jour-là, pas de camion à Ifs : on sera au <strong>{EXCEPTION.event}</strong>,{" "}
-              <strong>{EXCEPTION.place}</strong>, <strong>toute la journée</strong>.
-            </p>
-            <button className="ca-btn ca-btn-brass" onClick={() => setShowPopup(false)}>
+            <div className="ca-popup-eyebrow">Ce soir</div>
+            <h3 className="ca-popup-title">Pas de service ce soir</h3>
+            <p className="ca-popup-text">{CLOSURE_NOTICE.message}</p>
+            <button className="ca-btn ca-btn-brass" onClick={() => setShowClosurePopup(false)}>
               J'ai compris
             </button>
           </div>
         </div>
+      ) : (
+        showPopup && (
+          <div className="ca-popup-overlay" role="dialog" aria-modal="true" aria-label="Info emplacement exceptionnel">
+            <div className="ca-popup-card">
+              <div className="ca-popup-eyebrow">Changement exceptionnel</div>
+              <h3 className="ca-popup-title">On bouge samedi 5 septembre !</h3>
+              <p className="ca-popup-text">
+                Ce jour-là, pas de camion à Ifs : on sera au <strong>{EXCEPTION.event}</strong>,{" "}
+                <strong>{EXCEPTION.place}</strong>, <strong>toute la journée</strong>.
+              </p>
+              <button className="ca-btn ca-btn-brass" onClick={() => setShowPopup(false)}>
+                J'ai compris
+              </button>
+            </div>
+          </div>
+        )
       )}
 
       <div className="ca-header">
