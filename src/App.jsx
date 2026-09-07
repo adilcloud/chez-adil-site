@@ -112,12 +112,23 @@ const TABS = [
   { id: "planning", label: "Emplacements" },
   { id: "menu", label: "Carte" },
   { id: "prestations", label: "Privatisations" },
-  { id: "videos", label: "Vidéos" },
+  { id: "videos", label: "Galerie" },
   { id: "bio", label: "Bio" },
 ];
 
 const INSTAGRAM_URL = "https://www.instagram.com/chezadilstreetfood/";
 const YOUTUBE_URL = "https://www.youtube.com/@ChezAdil-streetfood";
+
+const PHOTOS = [
+  { src: "/images/gallery/photo1.jpg", alt: "Burger au pepperoni grillé" },
+  { src: "/images/gallery/photo2.jpg", alt: "Burger bacon et fromage" },
+  { src: "/images/gallery/photo3.jpg", alt: "Burger au bleu d'Ambert" },
+  { src: "/images/gallery/photo4.jpg", alt: "Burger guacamole" },
+  { src: "/images/gallery/photo5.jpg", alt: "Burger et frites maison" },
+  { src: "/images/gallery/photo6.jpg", alt: "Burger jambon et frites" },
+  { src: "/images/gallery/photo7.jpg", alt: "Burger bacon fromage vue rapprochée" },
+  { src: "/images/gallery/photo8.jpg", alt: "Burger avec crudités" },
+];
 
 const VIDEOS = [
   { title: "Short #1", url: "https://www.youtube.com/shorts/vzR4jGJwVRI", id: "vzR4jGJwVRI" },
@@ -175,7 +186,7 @@ function PhoneIcon({ size = 14 }) {
   );
 }
 
-function CarIcon({ size = 12 }) {
+function BurgerIcon({ size = 20 }) {
   return (
     <svg
       width={size}
@@ -183,16 +194,36 @@ function CarIcon({ size = 12 }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
+    >
+      <path d="M1 10 C1 4.2 6 1.2 12 1.2 C18 1.2 23 4.2 23 10" />
+      <path d="M1 10 L23 10" />
+      <circle cx="6.2" cy="4.7" r="0.75" fill="currentColor" stroke="none" />
+      <circle cx="9.4" cy="4.3" r="0.75" fill="currentColor" stroke="none" />
+      <circle cx="13.4" cy="4.3" r="0.75" fill="currentColor" stroke="none" />
+      <circle cx="16.6" cy="5.9" r="0.75" fill="currentColor" stroke="none" />
+      <circle cx="12.2" cy="7.3" r="0.75" fill="currentColor" stroke="none" />
+      <path d="M1.5 13.5 C2.5 12 3.5 15.5 5.5 13.7 C7.2 12 8.5 15.5 10.3 13.7 C12 12 13.3 15.5 15.1 13.7 C16.8 12 18.1 15.5 19.9 13.7 C21 12.5 21.8 13 22.5 13.5" />
+      <path d="M1 16 L23 16" />
+      <path d="M1 16 C1 21.8 6 22.8 12 22.8 C18 22.8 23 21.8 23 16" />
+    </svg>
+  );
+}
+
+function NavigationIcon({ size = 13 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      aria-hidden="true"
       style={{ verticalAlign: "-2px", marginRight: "4px" }}
     >
-      <path d="M5 11l1.4-3.6A2 2 0 0 1 8.26 6h7.48a2 2 0 0 1 1.86 1.4L19 11" />
-      <rect x="3" y="11" width="18" height="5" rx="1.5" />
-      <circle cx="7.5" cy="18" r="1.5" />
-      <circle cx="16.5" cy="18" r="1.5" />
+      <path d="M12 2 L5 20.5 L12 16.8 Z" fill="currentColor" />
+      <path d="M12 2 L19 20.5 L12 16.8 Z" fill="currentColor" opacity="0.55" />
     </svg>
   );
 }
@@ -220,6 +251,25 @@ function ShareIcon({ size = 15 }) {
 
 export default function ChezAdilApp() {
   const [tab, setTab] = useState("planning");
+
+  // --- Ecran d'intro (une seule fois par visiteur) ---
+  const [showIntro, setShowIntro] = useState(() => {
+    try {
+      return !localStorage.getItem("ca-intro-seen");
+    } catch {
+      return false;
+    }
+  });
+  useEffect(() => {
+    if (!showIntro) return;
+    const t = setTimeout(() => {
+      setShowIntro(false);
+      try {
+        localStorage.setItem("ca-intro-seen", "1");
+      } catch {}
+    }, 2600);
+    return () => clearTimeout(t);
+  }, [showIntro]);
 
   const currentDayNum = new Date().getDay();
   const exceptionToday = isExceptionToday();
@@ -265,12 +315,12 @@ export default function ChezAdilApp() {
 
     let timer;
     if (isIOS) {
-      timer = setTimeout(() => setInstallBanner("ios"), 8000);
+      timer = setTimeout(() => setInstallBanner("ios"), 3000);
     } else {
       const onBeforeInstall = (e) => {
         e.preventDefault();
         setDeferredPrompt(e);
-        timer = setTimeout(() => setInstallBanner("android"), 8000);
+        timer = setTimeout(() => setInstallBanner("android"), 3000);
       };
       window.addEventListener("beforeinstallprompt", onBeforeInstall);
       return () => window.removeEventListener("beforeinstallprompt", onBeforeInstall);
@@ -318,17 +368,24 @@ export default function ChezAdilApp() {
 
   return (
     <div className="ca-app">
+      {showIntro && (
+        <div className="ca-intro" aria-hidden="true">
+          <div className="ca-intro-gradient" />
+          <div className="ca-intro-text">Chez Adil</div>
+        </div>
+      )}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Work+Sans:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=Italiana&display=swap');
 
         .ca-app {
           --ca-navy: #16303F;
           --ca-navy-2: #1F425A;
           --ca-brass: #C9A24B;
           --ca-brass-light: #E4C878;
+          --ca-brass-dark: #8A6B2E;
           --ca-cream: #F3EFE6;
           --ca-ink: #1A1A1A;
-          --ca-steel: #5C7080;
+          --ca-steel: #4E606E;
           font-family: 'Work Sans', sans-serif;
           background: var(--ca-cream);
           color: var(--ca-ink);
@@ -341,6 +398,49 @@ export default function ChezAdilApp() {
           position: relative;
         }
         .ca-app * { box-sizing: border-box; }
+        .ca-intro {
+          position: fixed;
+          inset: 0;
+          background: var(--ca-navy);
+          z-index: 999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          animation: ca-intro-fade-out 0.7s ease 1.9s forwards;
+        }
+        .ca-intro-gradient {
+          position: absolute;
+          inset: -50%;
+          background: linear-gradient(115deg, transparent 35%, rgba(201,162,75,0.35) 50%, transparent 65%);
+          background-size: 260% 260%;
+          background-position: -120% -120%;
+          animation: ca-intro-sweep 3s ease forwards;
+        }
+        .ca-intro-text {
+          position: relative;
+          font-family: 'Italiana', serif;
+          font-size: 42px;
+          letter-spacing: 0.05em;
+          color: var(--ca-brass);
+          -webkit-text-stroke: 1px var(--ca-brass-dark);
+          text-shadow: 0 1px 0 rgba(255,255,255,0.15), 0 2px 3px rgba(0,0,0,0.5);
+          opacity: 0;
+          transform: translateY(6px);
+          animation: ca-intro-text-in 1.6s ease 0.15s forwards;
+        }
+        @keyframes ca-intro-sweep {
+          to { background-position: 120% 120%; }
+        }
+        @keyframes ca-intro-text-in {
+          to { opacity: 1; transform: none; }
+        }
+        @keyframes ca-intro-fade-out {
+          to { opacity: 0; visibility: hidden; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .ca-intro { display: none; }
+        }
         .ca-app button:focus-visible, .ca-app [role="tab"]:focus-visible {
           outline: 2px solid var(--ca-brass);
           outline-offset: 2px;
@@ -381,12 +481,10 @@ export default function ChezAdilApp() {
           padding: 28px 20px 20px;
           position: relative;
         }
-        .ca-rivet {
-          position: absolute;
-          width: 6px; height: 6px;
-          border-radius: 50%;
-          background: var(--ca-brass);
-          opacity: 0.7;
+        .ca-logo-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
         }
         .ca-logo {
           font-family: 'Oswald', sans-serif;
@@ -397,21 +495,23 @@ export default function ChezAdilApp() {
           margin: 0;
         }
         .ca-logo span { color: var(--ca-brass-light); }
-        .ca-badge-halo {
-          position: absolute;
-          top: 0px; right: 0px;
-          width: 86px; height: 86px;
+        .ca-logo-line {
+          flex: 1;
+          height: 1px;
+          background: linear-gradient(90deg, var(--ca-brass), transparent);
+          min-width: 24px;
+        }
+        .ca-logo-badge {
+          width: 40px;
+          height: 40px;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(228,200,120,0.38) 0%, rgba(228,200,120,0) 72%);
-          pointer-events: none;
+          border: 1.5px solid var(--ca-brass);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          color: var(--ca-brass-light);
         }
-        .ca-badge-spin {
-          position: absolute;
-          top: 10px; right: 10px;
-          animation: ca-spin 9s linear infinite;
-          filter: drop-shadow(0 0 4px rgba(201,162,75,0.55));
-        }
-        @keyframes ca-spin { to { transform: rotate(360deg); } }
 
         .ca-reviews {
           background: var(--ca-navy);
@@ -517,7 +617,7 @@ export default function ChezAdilApp() {
           text-align: center;
           background: var(--ca-navy-2);
           border: none;
-          color: rgba(243,239,230,0.55);
+          color: rgba(243,239,230,0.72);
           font-family: 'Oswald', sans-serif;
           font-size: 11px;
           letter-spacing: 0.03em;
@@ -584,9 +684,9 @@ export default function ChezAdilApp() {
           text-decoration: none;
         }
         .ca-stop-place { font-size: 13px; font-weight: 600; color: inherit; }
-        .ca-stop-gps { font-size: 11px; color: var(--ca-brass); display: inline-flex; align-items: center; }
+        .ca-stop-gps { font-size: 12px; color: var(--ca-brass-dark); display: inline-flex; align-items: center; }
         .ca-stop.today .ca-stop-gps { color: var(--ca-brass-light); }
-        .ca-stop-time { font-size: 11px; color: var(--ca-steel); white-space: nowrap; margin-left: 8px; }
+        .ca-stop-time { font-size: 12px; color: var(--ca-steel); white-space: nowrap; margin-left: 8px; }
         .ca-stop.today .ca-stop-time { color: rgba(243,239,230,0.7); }
         .ca-badge-today {
           font-size: 10px;
@@ -629,14 +729,14 @@ export default function ChezAdilApp() {
           font-size: 15px;
           color: var(--ca-navy);
         }
-        .ca-item-price { color: var(--ca-brass); font-weight: 700; white-space: nowrap; margin-left: 8px; }
-        .ca-item-note { font-size: 11px; color: var(--ca-steel); margin-top: 2px; }
-        .ca-item-desc { font-size: 13px; color: var(--ca-ink); margin-top: 4px; line-height: 1.4; }
+        .ca-item-price { color: var(--ca-brass-dark); font-weight: 700; white-space: nowrap; margin-left: 8px; }
+        .ca-item-note { font-size: 12px; color: var(--ca-steel); margin-top: 2px; }
+        .ca-item-desc { font-size: 15px; font-weight: 500; color: var(--ca-ink); margin-top: 4px; line-height: 1.55; }
 
         .ca-frites-box {
           margin-top: 14px;
           background: white;
-          border: 1.5px dashed var(--ca-brass);
+          border: 1.5px solid var(--ca-navy-2);
           border-radius: 10px;
           padding: 12px 14px;
         }
@@ -648,7 +748,7 @@ export default function ChezAdilApp() {
           font-size: 14px;
           color: var(--ca-navy);
         }
-        .ca-frites-desc { font-size: 12px; color: var(--ca-steel); margin-top: 4px; }
+        .ca-frites-desc { font-size: 13px; font-weight: 500; color: var(--ca-steel); margin-top: 4px; line-height: 1.5; }
 
         .ca-section-title {
           font-family: 'Oswald', sans-serif;
@@ -667,6 +767,7 @@ export default function ChezAdilApp() {
         .ca-mini-card {
           background: white;
           border: 1px solid #E4DFD1;
+          border-top: 3px solid var(--ca-navy-2);
           border-radius: 10px;
           padding: 12px 10px;
           text-align: center;
@@ -683,7 +784,7 @@ export default function ChezAdilApp() {
           color: var(--ca-navy);
           margin-bottom: 4px;
         }
-        .ca-mini-card-price { color: var(--ca-brass); font-weight: 700; font-size: 13px; }
+        .ca-mini-card-price { color: var(--ca-brass-dark); font-weight: 700; font-size: 13px; }
 
         .ca-card {
           background: white;
@@ -710,7 +811,7 @@ export default function ChezAdilApp() {
         .ca-btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
         .ca-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .ca-btn-brass { background: var(--ca-brass); color: var(--ca-navy); }
-        .ca-fineprint { font-size: 11px; color: var(--ca-steel); margin-top: 10px; text-align: center; }
+        .ca-fineprint { font-size: 12px; color: var(--ca-steel); margin-top: 10px; text-align: center; }
 
         .ca-form { margin-bottom: 20px; }
         .ca-field { margin-bottom: 12px; }
@@ -754,7 +855,7 @@ export default function ChezAdilApp() {
         .ca-video-thumb-img { transition: transform 0.3s ease; }
         .ca-video-link:hover .ca-video-thumb-img { transform: scale(1.04); }
         .ca-video-title { font-size: 13px; font-weight: 600; color: var(--ca-navy); }
-        .ca-video-sub { font-size: 11px; color: var(--ca-steel); }
+        .ca-video-sub { font-size: 12px; color: var(--ca-steel); }
         .ca-cta-yt, .ca-cta-insta {
           display: block;
           text-align: center;
@@ -782,8 +883,25 @@ export default function ChezAdilApp() {
           background: var(--ca-navy);
         }
         .ca-video-link { text-decoration: none; }
+        .ca-photo-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 8px;
+          margin-bottom: 8px;
+        }
+        .ca-photo-grid-img {
+          width: 100%;
+          aspect-ratio: 1 / 1;
+          object-fit: cover;
+          border-radius: 10px;
+          display: block;
+          transition: transform 0.2s ease;
+        }
+        .ca-photo-grid-img:hover, .ca-photo-grid-img:active {
+          transform: scale(1.03);
+        }
 
-        .ca-presta-desc { font-size: 13px; color: var(--ca-ink); line-height: 1.45; }
+        .ca-presta-desc { font-size: 15px; font-weight: 500; color: var(--ca-ink); line-height: 1.55; }
         .ca-cta-contact {
           display: block;
           text-align: center;
@@ -1037,30 +1155,15 @@ export default function ChezAdilApp() {
       )}
 
       <div className="ca-header">
-        <div className="ca-rivet" style={{ top: 10, left: 10 }} />
-        <div className="ca-badge-halo" aria-hidden="true" />
-        <div className="ca-badge-spin" aria-hidden="true">
-          <svg viewBox="0 0 120 120" width="64" height="64">
-            <defs>
-              <path
-                id="ca-badge-path"
-                d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0"
-              />
-            </defs>
-            <text fontSize="9.5" letterSpacing="2" fill="var(--ca-brass-light)">
-              <textPath href="#ca-badge-path">
-                BURGER &amp; FRITES MAISON • BURGER &amp; FRITES MAISON •
-              </textPath>
-            </text>
-          </svg>
+        <div className="ca-logo-row">
+          <h1 className="ca-logo">
+            Chez <span>Adil</span>
+          </h1>
+          <div className="ca-logo-line" aria-hidden="true" />
+          <div className="ca-logo-badge" aria-hidden="true">
+            <BurgerIcon />
+          </div>
         </div>
-        <h1 className="ca-logo">
-          Chez <span>Adil</span>
-        </h1>
-        <a className="ca-phone" href={`tel:${PHONE_TEL}`}>
-          <PhoneIcon />
-          {PHONE_DISPLAY}
-        </a>
         <p className="ca-tagline">Burger premium &amp; artisanal · depuis 2016 · Caen &amp; alentours</p>
         <div className="ca-today-strip">
           {todayStop.place ? (
@@ -1073,6 +1176,7 @@ export default function ChezAdilApp() {
         </div>
       </div>
 
+      <main>
       <div className="ca-tabs" role="tablist">
         {TABS.map((t) => (
           <button
@@ -1117,7 +1221,7 @@ export default function ChezAdilApp() {
             </div>
 
             <div className="ca-eyebrow">Semaine type</div>
-            <h3 className="ca-h3">Nos emplacements</h3>
+            <h2 className="ca-h3">Nos emplacements</h2>
             {STOPS.map((s) => {
               const isTodayRow = s.day === currentDayNum;
               const showException = isTodayRow && exceptionToday && s.day === 6;
@@ -1142,7 +1246,7 @@ export default function ChezAdilApp() {
                       >
                         <span className="ca-stop-place">{place}</span>
                         <span className="ca-stop-gps">
-                          <CarIcon />
+                          <NavigationIcon />
                           Itinéraire
                         </span>
                       </a>
@@ -1166,7 +1270,7 @@ export default function ChezAdilApp() {
           <div className="ca-fade-in-section" key="menu">
             <div className="ca-menu-halo" aria-hidden="true" />
             <div className="ca-eyebrow">La carte</div>
-            <h3 className="ca-h3">Nos burgers</h3>
+            <h2 className="ca-h3">Nos burgers</h2>
             {BURGERS.map((b) => (
               <div className="ca-item" key={b.name}>
                 <div className="ca-item-top">
@@ -1211,7 +1315,7 @@ export default function ChezAdilApp() {
         {tab === "prestations" && (
           <div className="ca-fade-in-section" key="prestations">
             <div className="ca-eyebrow">Événements privés</div>
-            <h3 className="ca-h3">Demande de privatisation</h3>
+            <h2 className="ca-h3">Demande de privatisation</h2>
             <p className="ca-item-desc" style={{ marginBottom: 14 }}>
               Entreprise, anniversaire, mariage : remplis le formulaire, ta demande part
               directement par mail au camion.
@@ -1311,8 +1415,22 @@ export default function ChezAdilApp() {
 
         {tab === "videos" && (
           <div className="ca-fade-in-section" key="videos">
-            <div className="ca-eyebrow">Dans les coulisses</div>
-            <h3 className="ca-h3">Dernières vidéos</h3>
+            <div className="ca-eyebrow">En cuisine</div>
+            <h2 className="ca-h3">Nos photos</h2>
+            <div className="ca-photo-grid">
+              {PHOTOS.map((p, i) => (
+                <img
+                  key={i}
+                  className="ca-photo-grid-img"
+                  src={p.src}
+                  alt={p.alt}
+                  loading="lazy"
+                />
+              ))}
+            </div>
+
+            <div className="ca-eyebrow" style={{ marginTop: 24 }}>Dans les coulisses</div>
+            <h2 className="ca-h3">Dernières vidéos</h2>
             {VIDEOS.map((v) => (
               <a
                 className="ca-video-link"
@@ -1357,7 +1475,7 @@ export default function ChezAdilApp() {
         {tab === "bio" && (
           <div className="ca-fade-in-section" key="bio">
             <div className="ca-eyebrow">Notre histoire</div>
-            <h3 className="ca-h3">De Burger Avenue à Chez Adil</h3>
+            <h2 className="ca-h3">De Burger Avenue à Chez Adil</h2>
 
             <p className="ca-bio-text">{BIO_PARAGRAPHS[0]}</p>
 
@@ -1378,6 +1496,7 @@ export default function ChezAdilApp() {
           </div>
         )}
       </div>
+      </main>
     </div>
   );
 }
