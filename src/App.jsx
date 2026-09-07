@@ -728,11 +728,11 @@ export default function ChezAdilApp() {
           justify-content: space-between;
           font-family: 'Oswald', sans-serif;
           font-size: 15px;
-          color: var(--ca-navy);
+          color: var(--ca-brass-dark);
         }
         .ca-item-price { color: var(--ca-brass-dark); font-weight: 700; white-space: nowrap; margin-left: 8px; }
         .ca-item-note { font-size: 12px; color: var(--ca-steel); margin-top: 2px; }
-        .ca-item-desc { font-size: 15px; font-weight: 500; color: var(--ca-ink); margin-top: 4px; line-height: 1.55; }
+        .ca-item-desc { font-size: 15px; font-weight: 500; color: var(--ca-navy-2); margin-top: 4px; line-height: 1.55; }
 
         .ca-frites-box {
           margin-top: 14px;
@@ -1414,7 +1414,7 @@ export default function ChezAdilApp() {
             <div className="ca-section-title">Sur devis</div>
             <div className="ca-presta-desc">
               Chaque privatisation est chiffrée selon le nombre de couverts, le lieu et les options
-              choisies (classique, bacon, végé).
+              choisies (classique, bacon, végé, dessert…).
             </div>
             <a className="ca-cta-contact" href={`tel:${PHONE_TEL}`}>
               Ou appeler directement · {PHONE_DISPLAY}
