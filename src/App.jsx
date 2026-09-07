@@ -425,15 +425,10 @@ export default function ChezAdilApp() {
           color: var(--ca-brass);
           -webkit-text-stroke: 1px var(--ca-brass-dark);
           text-shadow: 0 1px 0 rgba(255,255,255,0.15), 0 2px 3px rgba(0,0,0,0.5);
-          opacity: 0;
-          transform: translateY(6px);
-          animation: ca-intro-text-in 1.6s ease 0.15s forwards;
+          opacity: 1;
         }
         @keyframes ca-intro-sweep {
           to { background-position: 120% 120%; }
-        }
-        @keyframes ca-intro-text-in {
-          to { opacity: 1; transform: none; }
         }
         @keyframes ca-intro-fade-out {
           to { opacity: 0; visibility: hidden; }
