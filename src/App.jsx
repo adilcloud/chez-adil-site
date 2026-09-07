@@ -118,6 +118,7 @@ const TABS = [
 
 const INSTAGRAM_URL = "https://www.instagram.com/chezadilstreetfood/";
 const YOUTUBE_URL = "https://www.youtube.com/@ChezAdil-streetfood";
+const FACEBOOK_URL = "https://www.facebook.com/ChezAdilStreetFood/";
 
 const PHOTOS = [
   { src: "/images/gallery/photo1.jpg", alt: "Burger au pepperoni grillé" },
@@ -209,6 +210,44 @@ function BurgerIcon({ size = 20 }) {
       <path d="M1.5 13.5 C2.5 12 3.5 15.5 5.5 13.7 C7.2 12 8.5 15.5 10.3 13.7 C12 12 13.3 15.5 15.1 13.7 C16.8 12 18.1 15.5 19.9 13.7 C21 12.5 21.8 13 22.5 13.5" />
       <path d="M1 16 L23 16" />
       <path d="M1 16 C1 21.8 6 22.8 12 22.8 C18 22.8 23 21.8 23 16" />
+    </svg>
+  );
+}
+
+function InstagramIcon({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+      <defs>
+        <linearGradient id="ca-ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#FEE411" />
+          <stop offset="18%" stopColor="#FD5949" />
+          <stop offset="43%" stopColor="#D6249F" />
+          <stop offset="70%" stopColor="#A729C4" />
+          <stop offset="100%" stopColor="#285AEB" />
+        </linearGradient>
+      </defs>
+      <rect x="2" y="2" width="20" height="20" rx="6.5" fill="url(#ca-ig-grad)" />
+      <rect x="6.5" y="6.5" width="11" height="11" rx="3.2" fill="none" stroke="#fff" strokeWidth="1.4" />
+      <circle cx="12" cy="12" r="3.1" fill="none" stroke="#fff" strokeWidth="1.4" />
+      <circle cx="16" cy="8" r="1" fill="#fff" />
+    </svg>
+  );
+}
+
+function YoutubeIcon({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="2" y="4" width="20" height="16" rx="5" fill="#FF0000" />
+      <path d="M10 8.5 L16 12 L10 15.5 Z" fill="#fff" />
+    </svg>
+  );
+}
+
+function FacebookIcon({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="2" y="2" width="20" height="20" rx="6" fill="#1877F2" />
+      <path d="M14.5 8.5h1.8V6h-1.8c-1.9 0-3.2 1.3-3.2 3.2V11H9.5v2.3h1.8V19h2.6v-5.7h1.8l.3-2.3h-2.1V9.2c0-.5.3-.7.6-.7z" fill="#fff" />
     </svg>
   );
 }
@@ -475,6 +514,30 @@ export default function ChezAdilApp() {
           padding: 28px 20px 20px;
           position: relative;
         }
+        .ca-phone-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin-top: 8px;
+        }
+        .ca-social-row {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .ca-social-btn {
+          width: 24px;
+          height: 24px;
+          border-radius: 6px;
+          overflow: hidden;
+          display: flex;
+          flex-shrink: 0;
+          transition: transform 0.2s ease;
+        }
+        .ca-social-btn:hover, .ca-social-btn:active {
+          transform: scale(1.1);
+        }
         .ca-logo-row {
           display: flex;
           align-items: center;
@@ -575,7 +638,6 @@ export default function ChezAdilApp() {
         .ca-phone {
           display: inline-flex;
           align-items: center;
-          margin-top: 8px;
           font-size: 18px;
           font-weight: 700;
           color: var(--ca-cream);
@@ -1162,10 +1224,41 @@ export default function ChezAdilApp() {
             <BurgerIcon />
           </div>
         </div>
-        <a className="ca-phone" href={`tel:${PHONE_TEL}`}>
-          {PHONE_DISPLAY}
-          <PhoneIcon />
-        </a>
+        <div className="ca-phone-row">
+          <a className="ca-phone" href={`tel:${PHONE_TEL}`}>
+            {PHONE_DISPLAY}
+            <PhoneIcon />
+          </a>
+          <div className="ca-social-row">
+            <a
+              className="ca-social-btn"
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Suivre Chez Adil sur Instagram"
+            >
+              <InstagramIcon />
+            </a>
+            <a
+              className="ca-social-btn"
+              href={YOUTUBE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Suivre Chez Adil sur YouTube"
+            >
+              <YoutubeIcon />
+            </a>
+            <a
+              className="ca-social-btn"
+              href={FACEBOOK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Suivre Chez Adil sur Facebook"
+            >
+              <FacebookIcon />
+            </a>
+          </div>
+        </div>
         <p className="ca-tagline">
           Burger artisanal · depuis 2016
           <br />
