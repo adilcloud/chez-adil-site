@@ -214,7 +214,7 @@ function BurgerIcon({ size = 20 }) {
   );
 }
 
-function InstagramIcon({ size = 18 }) {
+function InstagramIcon({ size = 36 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
       <defs>
@@ -234,7 +234,7 @@ function InstagramIcon({ size = 18 }) {
   );
 }
 
-function YoutubeIcon({ size = 18 }) {
+function YoutubeIcon({ size = 36 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
       <rect x="2" y="4" width="20" height="16" rx="5" fill="#FF0000" />
@@ -243,7 +243,7 @@ function YoutubeIcon({ size = 18 }) {
   );
 }
 
-function FacebookIcon({ size = 18 }) {
+function FacebookIcon({ size = 36 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
       <rect x="2" y="2" width="20" height="20" rx="6" fill="#1877F2" />
@@ -290,25 +290,6 @@ function ShareIcon({ size = 15 }) {
 
 export default function ChezAdilApp() {
   const [tab, setTab] = useState("planning");
-
-  // --- Ecran d'intro (une seule fois par visiteur) ---
-  const [showIntro, setShowIntro] = useState(() => {
-    try {
-      return !localStorage.getItem("ca-intro-seen");
-    } catch {
-      return false;
-    }
-  });
-  useEffect(() => {
-    if (!showIntro) return;
-    const t = setTimeout(() => {
-      setShowIntro(false);
-      try {
-        localStorage.setItem("ca-intro-seen", "1");
-      } catch {}
-    }, 2600);
-    return () => clearTimeout(t);
-  }, [showIntro]);
 
   const currentDayNum = new Date().getDay();
   const exceptionToday = isExceptionToday();
@@ -407,12 +388,6 @@ export default function ChezAdilApp() {
 
   return (
     <div className="ca-app">
-      {showIntro && (
-        <div className="ca-intro" aria-hidden="true">
-          <div className="ca-intro-gradient" />
-          <div className="ca-intro-text">Chez Adil</div>
-        </div>
-      )}
       <style>{`
 
         .ca-app {
@@ -436,44 +411,6 @@ export default function ChezAdilApp() {
           position: relative;
         }
         .ca-app * { box-sizing: border-box; }
-        .ca-intro {
-          position: fixed;
-          inset: 0;
-          background: var(--ca-navy);
-          z-index: 999;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          overflow: hidden;
-          animation: ca-intro-fade-out 0.7s ease 1.9s forwards;
-        }
-        .ca-intro-gradient {
-          position: absolute;
-          inset: -50%;
-          background: linear-gradient(115deg, transparent 35%, rgba(201,162,75,0.35) 50%, transparent 65%);
-          background-size: 260% 260%;
-          background-position: -120% -120%;
-          animation: ca-intro-sweep 3s ease forwards;
-        }
-        .ca-intro-text {
-          position: relative;
-          font-family: 'Italiana', serif;
-          font-size: 42px;
-          letter-spacing: 0.05em;
-          color: var(--ca-brass);
-          -webkit-text-stroke: 1px var(--ca-brass-dark);
-          text-shadow: 0 1px 0 rgba(255,255,255,0.15), 0 2px 3px rgba(0,0,0,0.5);
-          opacity: 1;
-        }
-        @keyframes ca-intro-sweep {
-          to { background-position: 120% 120%; }
-        }
-        @keyframes ca-intro-fade-out {
-          to { opacity: 0; visibility: hidden; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .ca-intro { display: none; }
-        }
         .ca-app button:focus-visible, .ca-app [role="tab"]:focus-visible {
           outline: 2px solid var(--ca-brass);
           outline-offset: 2px;
@@ -527,9 +464,9 @@ export default function ChezAdilApp() {
           gap: 6px;
         }
         .ca-social-btn {
-          width: 24px;
-          height: 24px;
-          border-radius: 6px;
+          width: 36px;
+          height: 36px;
+          border-radius: 9px;
           overflow: hidden;
           display: flex;
           flex-shrink: 0;
