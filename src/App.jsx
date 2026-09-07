@@ -375,7 +375,6 @@ export default function ChezAdilApp() {
         </div>
       )}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=Italiana&display=swap');
 
         .ca-app {
           --ca-navy: #16303F;
