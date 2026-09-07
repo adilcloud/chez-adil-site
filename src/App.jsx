@@ -714,13 +714,16 @@ export default function ChezAdilApp() {
         }
 
         .ca-item {
-          border-bottom: 1px solid #E4DFD1;
-          padding: 12px 0;
-          transition: transform 0.2s ease, padding-left 0.2s ease;
+          background: white;
+          border: 1px solid #E4DFD1;
+          border-radius: 8px;
+          padding: 12px 14px;
+          margin-bottom: 8px;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         .ca-item:hover, .ca-item:active {
-          transform: translateX(2px);
-          padding-left: 4px;
+          transform: translateY(-1px);
+          box-shadow: 0 6px 14px rgba(22,48,63,0.08);
         }
         .ca-item:last-child { border-bottom: none; }
         .ca-item-top {
