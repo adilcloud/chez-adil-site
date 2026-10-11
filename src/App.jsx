@@ -33,9 +33,9 @@ const EXCEPTION = {
 // Passe "active" à false pour la désactiver, ou change "date" pour la prochaine fois.
 const CLOSURE_NOTICE = {
   active: true,
-  date: "2026-09-04", // format AAAA-MM-JJ, le soir concerné
+  date: "2026-10-11", // format AAAA-MM-JJ, le soir concerné
   message:
-    "Pas de service ce soir à Mondeville : on est en pleine préparation pour demain, 100% produits frais. On vous attend dès demain !",
+    "Exceptionnellement, pas de service ce dimanche soir au Super U de Colombelles. On se retrouve mercredi au Bar de l'Europe, Rue Malon à Caen !",
 };
 
 function todayLocalStr() {
