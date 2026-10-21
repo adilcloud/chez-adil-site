@@ -33,10 +33,27 @@ const EXCEPTION = {
 // Passe "active" à false pour la désactiver, ou change "date" pour la prochaine fois.
 const CLOSURE_NOTICE = {
   active: true,
-  date: "2026-10-11", // format AAAA-MM-JJ, le soir concerné
+  date: "2026-10-21", // format AAAA-MM-JJ, le soir concerné
   message:
-    "Exceptionnellement, pas de service ce dimanche soir au Super U de Colombelles. On se retrouve mercredi au Bar de l'Europe, Rue Malon à Caen !",
+    "Exceptionnellement, pas de service ce mercredi soir au Bar de l'Europe, rue Malon. On se retrouve demain, jeudi, au Super U de Colombelles dès 19h !",
 };
+
+// ---- Teaser "nouveaux burgers" ----
+// Affiché une fois par jour et par visiteur, après le popup de fermeture s'il y en a un.
+// Passe "active" à false le jour où les nouveaux burgers sont annoncés.
+const TEASER = {
+  active: true,
+  hints: ["#Scamorza", "#Stracciatella", "#Pancetta", "#Raclette"],
+};
+
+function isTeaserDue() {
+  if (!TEASER.active) return false;
+  try {
+    return localStorage.getItem("ca-teaser-seen") !== todayLocalStr();
+  } catch (e) {
+    return true;
+  }
+}
 
 function todayLocalStr() {
   const d = new Date();
@@ -300,6 +317,16 @@ export default function ChezAdilApp() {
 
   const [showPopup, setShowPopup] = useState(isExceptionWindowOpen());
   const [showClosurePopup, setShowClosurePopup] = useState(isClosureNoticeActive());
+  const [showTeaser, setShowTeaser] = useState(isTeaserDue());
+
+  function dismissTeaser() {
+    setShowTeaser(false);
+    try {
+      localStorage.setItem("ca-teaser-seen", todayLocalStr());
+    } catch (e) {
+      // stockage indisponible : le teaser réapparaîtra simplement à la prochaine visite
+    }
+  }
 
   const [form, setForm] = useState({
     nom: "",
@@ -962,6 +989,21 @@ export default function ChezAdilApp() {
           margin: 0 0 16px;
         }
 
+        .ca-popup-hints {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin: 0 0 16px;
+        }
+        .ca-popup-hint {
+          background: var(--ca-navy);
+          color: var(--ca-brass-light);
+          font-size: 12px;
+          font-weight: 700;
+          padding: 5px 10px;
+          border-radius: 6px;
+        }
+
         .ca-bio-duo {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -1134,7 +1176,7 @@ export default function ChezAdilApp() {
           </div>
         </div>
       ) : (
-        showPopup && (
+        showPopup ? (
           <div className="ca-popup-overlay" role="dialog" aria-modal="true" aria-label="Info emplacement exceptionnel">
             <div className="ca-popup-card">
               <div className="ca-popup-eyebrow">Changement exceptionnel</div>
@@ -1148,6 +1190,24 @@ export default function ChezAdilApp() {
               </button>
             </div>
           </div>
+        ) : (
+          showTeaser && (
+            <div className="ca-popup-overlay" role="dialog" aria-modal="true" aria-label="Nouveaux burgers bientôt">
+              <div className="ca-popup-card">
+                <div className="ca-popup-eyebrow">Bientôt</div>
+                <h3 className="ca-popup-title">Du nouveau arrive à la carte…</h3>
+                <p className="ca-popup-text">De nouvelles recettes se préparent en cuisine. Petits indices :</p>
+                <div className="ca-popup-hints">
+                  {TEASER.hints.map((h) => (
+                    <span key={h} className="ca-popup-hint">{h}</span>
+                  ))}
+                </div>
+                <button className="ca-btn ca-btn-brass" onClick={dismissTeaser}>
+                  J'ai hâte
+                </button>
+              </div>
+            </div>
+          )
         )
       )}
 
