@@ -1144,6 +1144,80 @@ export default function ChezAdilApp() {
           cursor: pointer;
           padding: 4px;
         }
+
+        /* ---- Thème "carte" : bleu nuit, doré lumineux, orange ---- */
+        html, body { background: #0B111C; margin: 0; }
+        .ca-app { background: #121A2A; color: #EDEFF3; box-shadow: 0 0 0 2px #22304A; }
+        .ca-app button:focus-visible, .ca-app [role="tab"]:focus-visible { outline-color: #E8C14A; }
+        .ca-header { background: #0E1522; color: #EDEFF3; border-bottom: 2px solid #E8783A; }
+        .ca-logo, .ca-logo span { color: #E8C14A; text-shadow: 0 0 14px rgba(232,193,74,0.7), 0 0 32px rgba(232,193,74,0.35); }
+        .ca-logo-line { background: linear-gradient(90deg, #E8783A, transparent); box-shadow: 0 0 8px rgba(232,120,58,0.6); }
+        .ca-logo-badge { border-color: #E8C14A; color: #E8C14A; box-shadow: 0 0 12px rgba(232,193,74,0.45); }
+        .ca-phone { color: #FFFFFF; border-bottom-color: #E8783A; }
+        .ca-tagline { color: #E8C14A; }
+        .ca-today-strip { background: #1C2840; border-left-color: #E8783A; color: #EDEFF3; }
+        .ca-today-strip b { color: #E8C14A; }
+        .ca-tabs { background: #0E1522; border-bottom: 2px solid #E8C14A; }
+        .ca-tab { background: #1C2840; color: #A9B3C4; }
+        .ca-tab:hover:not(.active) { color: #EDEFF3; }
+        .ca-tab.active { background: #E8C14A; color: #121A2A; font-weight: 700; box-shadow: 0 0 14px rgba(232,193,74,0.45); }
+        .ca-eyebrow, .ca-section-title { color: #E8783A; }
+        .ca-h3 { color: #E8C14A; text-shadow: 0 0 12px rgba(232,193,74,0.45); }
+        .ca-menu-halo::before { background: radial-gradient(ellipse, rgba(232,193,74,0.28) 0%, rgba(232,193,74,0) 70%); }
+        .ca-reviews { background: #1C2840; color: #EDEFF3; border: 1px solid #2E3E5C; }
+        .ca-reviews-stars, .ca-reviews-author { color: #E8C14A; }
+        .ca-reviews-dot { background: rgba(237,239,243,0.3); }
+        .ca-reviews-dot.active { background: #E8C14A; }
+        .ca-reviews-link { color: #EDEFF3; border-bottom-color: #E8783A; }
+        .ca-stop { background: #1C2840; border-color: #2E3E5C; color: #EDEFF3; }
+        .ca-stop:hover, .ca-stop:active { box-shadow: 0 6px 14px rgba(0,0,0,0.35); }
+        .ca-stop.today { background: #24324F; border-color: #E8C14A; color: #EDEFF3; box-shadow: 0 0 16px rgba(232,193,74,0.25); }
+        .ca-stop.today .ca-stop-place, .ca-stop.today .ca-stop-gps { color: #E8C14A; }
+        .ca-stop-place-link, .ca-stop-place { color: #EDEFF3; }
+        .ca-stop-gps { color: #F2A65A; }
+        .ca-stop-time { color: #A9B3C4; }
+        .ca-stop.today .ca-stop-time { color: #DCE1EA; }
+        .ca-badge-today { background: #E8C14A; color: #121A2A; }
+        .ca-badge-new, .ca-badge-exception { background: #E8783A; color: #121A2A; }
+        .ca-stop-exception-note { color: #E8C14A; }
+        .ca-item, .ca-card, .ca-video, .ca-mini-card { background: #1C2840; border-color: #2E3E5C; }
+        .ca-item:hover, .ca-item:active { box-shadow: 0 6px 14px rgba(0,0,0,0.35); }
+        .ca-item-top { color: #E8C14A; text-shadow: 0 0 10px rgba(232,193,74,0.35); }
+        .ca-item-price { color: #F2A65A; text-shadow: 0 0 10px rgba(242,166,90,0.35); }
+        .ca-item-note { color: #A9B3C4; }
+        .ca-item-desc { color: #DCE1EA; }
+        .ca-frites-box { background: #1C2840; border-color: #E8783A; }
+        .ca-frites-top { color: #E8C14A; }
+        .ca-frites-desc { color: #A9B3C4; }
+        .ca-mini-card { border-top-color: #E8783A; }
+        .ca-mini-card:hover, .ca-mini-card:active { border-color: #E8C14A; box-shadow: 0 6px 14px rgba(0,0,0,0.35); }
+        .ca-mini-card-name { color: #EDEFF3; }
+        .ca-mini-card-price { color: #F2A65A; }
+        .ca-btn { background: #E8783A; color: #121A2A; font-weight: 700; }
+        .ca-btn:hover:not(:disabled) { box-shadow: 0 0 16px rgba(232,120,58,0.45); }
+        .ca-btn-brass { background: #E8C14A; color: #121A2A; }
+        .ca-btn-brass:hover:not(:disabled) { box-shadow: 0 0 16px rgba(232,193,74,0.45); }
+        .ca-fineprint, .ca-label, .ca-video-sub { color: #A9B3C4; }
+        .ca-input { background: #121A2A; border-color: #2E3E5C; color: #EDEFF3; color-scheme: dark; }
+        .ca-input::placeholder { color: #8D97AB; }
+        .ca-input:focus { outline-color: #E8C14A; }
+        .ca-video-link:hover .ca-video, .ca-video-link:active .ca-video { border-color: #E8C14A; box-shadow: 0 6px 14px rgba(0,0,0,0.35); }
+        .ca-video-title { color: #EDEFF3; }
+        .ca-video-thumb-img { background: #0E1522; }
+        .ca-cta-yt { background: #E8C14A; color: #121A2A; font-weight: 700; }
+        .ca-cta-insta { background: #1C2840; color: #E8C14A; border: 1.5px solid #E8C14A; }
+        .ca-presta-desc { color: #DCE1EA; }
+        .ca-cta-contact { background: #E8783A; color: #121A2A; font-weight: 700; }
+        .ca-popup-overlay { background: rgba(5, 9, 16, 0.8); }
+        .ca-popup-card { background: #1C2840; border-top-color: #E8C14A; box-shadow: 0 0 0 1px #2E3E5C, 0 10px 30px rgba(0,0,0,0.5); }
+        .ca-popup-eyebrow { color: #E8783A; }
+        .ca-popup-title { color: #E8C14A; }
+        .ca-popup-text { color: #DCE1EA; }
+        .ca-popup-hint { background: #121A2A; color: #E8C14A; border: 1px solid #2E3E5C; }
+        .ca-bio-duo-label { background: linear-gradient(to top, rgba(14,21,34,0.92), rgba(14,21,34,0)); color: #EDEFF3; }
+        .ca-bio-text { color: #DCE1EA; }
+        .ca-bio-signature { color: #E8C14A; text-shadow: 0 0 10px rgba(232,193,74,0.4); }
+        .ca-install-banner { background: #1C2840; color: #EDEFF3; border-color: rgba(232,193,74,0.45); }
       `}</style>
 
       {installBanner && (
