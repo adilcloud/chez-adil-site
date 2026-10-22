@@ -42,7 +42,7 @@ const CLOSURE_NOTICE = {
 // Affiché une fois par jour et par visiteur, après le popup de fermeture s'il y en a un.
 // Passe "active" à false le jour où les nouveaux burgers sont annoncés.
 const TEASER = {
-  active: true,
+  active: false,
   hints: ["#Scamorza", "#Stracciatella", "#Pancetta", "#Raclette"],
 };
 
@@ -87,14 +87,15 @@ const BURGERS = [
     desc: "Steak, cheddar, oignons, salade, tomate, cornichons, sauce burger.",
   },
   {
+    name: "Le Bacon Burger",
+    price: "12,50 €",
+    isNew: true,
+    desc: "Steak, bacon, œuf, cheddar, oignons, salade, tomate, sauce burger.",
+  },
+  {
     name: "Le Bacon Fusion",
     price: "13 €",
     desc: "Steak, cheddar, provolone, double bacon de bœuf et de dinde, oignons, salade, tomate, sauce douce oignons.",
-  },
-  {
-    name: "Le Spicy Kefta Avocado",
-    price: "12,90 €",
-    desc: "Steak façon kefta, cheddar spicy, guacamole maison, oignons, salade, tomate, sauce toscane.",
   },
   {
     name: "Le BG d'Ambert",
@@ -107,10 +108,16 @@ const BURGERS = [
     desc: "Steak, cheddar, provolone, pepperoni, oignons, salade, tomate, sauce toscane.",
   },
   {
-    name: "Le Chèvre et Poivron",
-    price: "12 €",
-    note: "9 € sans steak (végé)",
-    desc: "Steak, cheddar, chèvre, poivrons et oignons grillés, tomate, salade, cream cheese.",
+    name: "Le Refuge",
+    price: "13,50 €",
+    isNew: true,
+    desc: "Steak, raclette aux herbes poivrées, pancetta de bœuf, salade, oignons, tomate, sauce baconnaise.",
+  },
+  {
+    name: "Tony Soprano",
+    price: "13,50 €",
+    isNew: true,
+    desc: "Steak, scamorza fumée, stracciatella, jambon de veau, oignons confits.",
   },
 ];
 
@@ -717,6 +724,18 @@ export default function ChezAdilApp() {
           border-radius: 4px;
           font-weight: 700;
           text-transform: uppercase;
+        }
+        .ca-badge-new {
+          font-size: 10px;
+          background: #B5482F;
+          color: var(--ca-cream);
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-weight: 700;
+          text-transform: uppercase;
+          margin-left: 8px;
+          vertical-align: 2px;
+          letter-spacing: 0.04em;
         }
         .ca-badge-exception {
           font-size: 10px;
@@ -1370,7 +1389,10 @@ export default function ChezAdilApp() {
             {BURGERS.map((b) => (
               <div className="ca-item" key={b.name}>
                 <div className="ca-item-top">
-                  <span>{b.name}</span>
+                  <span>
+                    {b.name}
+                    {b.isNew && <span className="ca-badge-new">Nouveau</span>}
+                  </span>
                   <span className="ca-item-price">{b.price}</span>
                 </div>
                 {b.note && <div className="ca-item-note">{b.note}</div>}
