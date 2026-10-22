@@ -117,7 +117,7 @@ const BURGERS = [
     name: "Tony Soprano",
     price: "13,50 €",
     isNew: true,
-    desc: "Steak, scamorza fumée, stracciatella, jambon de veau, oignons confits.",
+    desc: "Steak, scamorza fumée, stracciatella, jambon de veau, oignons confits, salade.",
   },
 ];
 
