@@ -114,10 +114,16 @@ const BURGERS = [
     desc: "Steak, raclette aux herbes poivrées, pancetta de bœuf, salade, oignons, tomate, sauce baconnaise.",
   },
   {
-    name: "Tony Soprano",
-    price: "13,50 €",
+    name: "Le Samaritain",
+    price: "12,90 €",
     isNew: true,
-    desc: "Steak, scamorza fumée, stracciatella, jambon de veau, oignons confits, salade.",
+    desc: "Steak, bacon, saint-nectaire, champignons, oignons, salade, tomate, sauce tartare.",
+  },
+  {
+    name: "Le Reblochon",
+    price: "13 €",
+    isNew: true,
+    desc: "Steak, reblochon, œuf, lardons, oignons, salade, sauce BBQ.",
   },
 ];
 
